@@ -50,3 +50,54 @@ Because of the `index.js`rule mentioned above, the page we just created will be 
 This says when we go to our website, `localhost:3000/create` /create, we're going to automatically go to our Create page. You should see the create page loaded
 ![alt text](https://s3.amazonaws.com/clc-images/CreatePage.png)
 
+# Create a Form With A Submit
+- Import a Button, a Form component, a FormInput, Yup, Formik, and Box. You'll see what all these do in practice soon.
+```
+import { Button } from 'semantic-ui-react'
+import Form from '../Form';
+import FormInput from '../FormInput'
+import * as Yup from 'yup';
+import { Formik } from 'formik';
+import { Box } from 'rebass';
+```
+
+- First, let's set up a validator. A validator is used to make sure the user doesn't submit data they shouldn't. When you've submitted forms and you've gotten a "password isn't long enough" message, a validator is what is checking the logic. We're goign to use a validation library called Yup because it's super simple to use. Paste the following code, and we'll walk through it:
+
+```
+const FormSchema = Yup.object().shape({
+    text: Yup.string()
+        .required('Text for your To-Do is required')
+});
+```
+
+- `const FormSchema` defines a variable named FormSchema
+- `Yup.object().shape()...` defines the validation object. This says what our form is going to be expecting. We're only going to have one field for the text of our To-Do:
+```
+text: Yup.string()
+    .required('Text for your To-Do is required')
+```
+
+Now, it's time to set up our form to put our validation in. Copy the following code for the `render()` method. I have put comments to explain what each does.
+```
+  render () {
+      return (
+          <Formik // A form library that takes care of a lot of magic for us
+          initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
+          validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
+          render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+          <Form> // HTML component for a form
+              <Box> // Creates a "Box" HTML component to put stuff in
+                  <Box p={10}> // This is inside our bigger box to make a row of space for our text input
+                      <FormInput name="text" placeholder="Clean the basement" type="text" /> // This is the actual text input
+                  </Box> // Closing Box
+                  <Box p={10}> // This is inside our bigger box to make a row of space for our Create button
+                      <Button type="submit">Create</Button>
+                  </Box> // Closing Box
+             </Box> // Closing Box
+          </Form> // Closing Form
+          )}
+      />)    
+  }
+```
+Save the file and watch the page reload. You just set up your first form! Try clicking the "Create" button without putting in any text. That's the FormSchema in action :).
+
