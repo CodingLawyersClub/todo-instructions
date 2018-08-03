@@ -106,24 +106,26 @@ Save the file and watch the page reload. You just set up your first form! Try cl
 - Go to `src/stores/` and create a new file called `toDoStore.js`
 - At the top of `toDoStore.js` import the following:
 ```
-import { observable, action } from 'mobx';
+import { observable, action, flow } from 'mobx';
+import agent from '../agent';
+import error from '../utils/error';
 ```
 
-These are magic methods we'll be using later for MobX.
+You'll see these imports in action later.
 
-Define a class named `ToDoStore`:
+- Define a class named `ToDoStore`:
 ```
 class ToDoStore {
 
 }
 ```
 
-Finally export the store
+- Finally export the store
 ```
 export default new ToDoStore();
 ```
 
-Altogether now:
+- Altogether `toDoStore.js` should look like this:
 
 ```
 import { observable, action, reaction } from 'mobx';
@@ -135,14 +137,14 @@ class ToDoStore {
 export default new ToDoStore();
 ```
 
-Go to `src/index.js`. We're now going to add this store we created to our app.
+- Go to `src/index.js`. We're now going to add this store we created to our app.
 
-First, import it on line 13:
+- First, import it on line 13:
 ```
 import toDoStore from './stores/toDoStore';
 ```
 
-Then add it to the list of stores on line 23:
+- Then add it to the list of stores on line 23:
 ```
 const stores = {
   authStore,
@@ -153,16 +155,16 @@ const stores = {
 ```
 Great, now this new store is in your app! It doesn't do anything yet though. Let's change that!
 
-First, we need to define our network request to make. All of our network requests are made in the `agent.js` file. Navigate to it (TIP: don't forget you can always search for a file in VSCode by searching CMD + P).
+- First, we need to define our network request to make. All of our network requests are made in the `agent.js` file. Navigate to it (TIP: don't forget you can always search for a file in VSCode by searching CMD + P).
 
-Below `Account` add a new variable named `ToDo`. This is where all the network requests around the `ToDo` model will go. This just keeps things organized and much easier to read.
+- Below `Account` add a new variable named `ToDo`. This is where all the network requests around the `ToDo` model will go. This just keeps things organized and much easier to read.
 
 ```
 const ToDo = {
 };
 ```
 
-Let's add a method called `create`. This method is going to create a new To-Do in our database by calling an endpoint /toods. We use the `.post` method when we want to create something. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
+- Let's add a method called `create`. This method is going to create a new To-Do in our database by calling an endpoint /toods. We use the `.post` method when we want to create something. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
 
 ```
 const ToDo = {
@@ -170,4 +172,81 @@ const ToDo = {
     requests.post(`/todos`, toDo),
 };
 ```
+
+- Export the ToDo so other files can know about its existence:
+
+```export default {
+  Account,
+  Auth,
+  ToDo <-- Add it here!
+};
+```
+
+- Go back to `toDoStore.js`. Let's link everything together.
+- Create a new action called `createToDo`. It should look like this:
+```
+@action
+createToDo = flow(function* () {
+
+});
+```
+
+There's a lot of fancy code going on there. There's only two things I want you to understand.
+1. This is an action. The `@action` gives this function special properties. When you're taking an action (hitting the internet, for example) be on the safe side and define it as an `action`
+2. The `flow` we use because we're making a network request. Always include this when hitting the internet.
+That's all you need to know for now.
+
+Let's fill this function!
+
+- Inside of `createToDo` let's pass in the toDo. This is the text from our input before. Let's also call that `create` method we put in `agent` on the `ToDo` object. The `yield` says that we're making a network request, and do not move on to running the next line until the result comes back, which we're defining as `response`. We're going to `console.log` the result, which will print it out for us to see in the browser. It will look like this:
+
+```
+@action
+createToDo = flow(function* (toDo) {
+  const response = yield agent.ToDo.create(toDo);
+  console.log("OUR CREATED TODO", response.toDo);
+});
+```
+
+# Link Up Our createToDo() method with our Create page
+- Go back to `Create/index.js`. Add the following to get our MobX store into our create page:
+```
+import { inject, observer } from 'mobx-react' <-- Import this on top
+...
+@inject("toDoStore")
+@observer
+export default class extends Component {
+```
+MAKE SURE THE `@inject`, `@observer` and `export` statement ARE TOUCHING EXACTLY HOW YOU SEE ABOVE.
+
+Now, let's call our create method.
+
+Under `<Formik` add the `onSubmit` exactly how you see here:
+```
+<Formik
+onSubmit={formValues => {
+    this.create(formValues) 
+}}
+```
+This means that when the Create button is clicked, our form is automatically going to call this `onSubmit`. It is passing the values from the form (the text of our toDo) and then calling a method that does not exist yet called `createToDo`. Let's define that method now.
+
+On line 41, add a `createToDo` method
+
+```
+create(formValues) {
+
+}
+```
+
+On every React component there is a magical property called, well, `props`. We're going to call our `createToDo` method by accessing the `props` on this Create Page. Pass in the formValues because this is what contains the `text` of our To-Do.
+
+```
+create(formValues) {
+  this.props.toDoStore.createToDo(formValues)
+}
+```
+
+Believe it or not, you're all synced up on the front end to create To-Dos. Let the page reload, add some text to the input, and click Create. Open up your console by right clicking --> Inspect --> Console. You should see the log you wrote before with some data. That is your To-Do returned from the server :)
+
+
 
