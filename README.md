@@ -85,19 +85,89 @@ Now, it's time to set up our form to put our validation in. Copy the following c
           initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
           validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
           render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
-          <Form> // HTML component for a form
-              <Box> // Creates a "Box" HTML component to put stuff in
-                  <Box p={10}> // This is inside our bigger box to make a row of space for our text input
-                      <FormInput name="text" placeholder="Clean the basement" type="text" /> // This is the actual text input
-                  </Box> // Closing Box
-                  <Box p={10}> // This is inside our bigger box to make a row of space for our Create button
+          <Form>
+              <Box>
+                  <Box p={10}>
+                      <FormInput name="text" placeholder="Clean the basement" type="text" />
+                  </Box>
+                  <Box p={10}>
                       <Button type="submit">Create</Button>
-                  </Box> // Closing Box
-             </Box> // Closing Box
-          </Form> // Closing Form
+                  </Box>
+             </Box>
+          </Form>
           )}
       />)    
   }
 ```
 Save the file and watch the page reload. You just set up your first form! Try clicking the "Create" button without putting in any text. That's the FormSchema in action :).
+
+# Link Up With MobX and Hit the Internet
+- Now that we have our form good to go, we need something to happen when you click Create. We use MobX to initiate our network requests and load data. So let's get started creating what we call a MobX store.
+- Go to `src/stores/` and create a new file called `toDoStore.js`
+- At the top of `toDoStore.js` import the following:
+```
+import { observable, action } from 'mobx';
+```
+
+These are magic methods we'll be using later for MobX.
+
+Define a class named `ToDoStore`:
+```
+class ToDoStore {
+
+}
+```
+
+Finally export the store
+```
+export default new ToDoStore();
+```
+
+Altogether now:
+
+```
+import { observable, action, reaction } from 'mobx';
+
+class ToDoStore {
+
+}
+
+export default new ToDoStore();
+```
+
+Go to `src/index.js`. We're now going to add this store we created to our app.
+
+First, import it on line 13:
+```
+import toDoStore from './stores/toDoStore';
+```
+
+Then add it to the list of stores on line 23:
+```
+const stores = {
+  authStore,
+  commonStore,
+  userStore,
+  toDoStore <-- Add this one!
+};
+```
+Great, now this new store is in your app! It doesn't do anything yet though. Let's change that!
+
+First, we need to define our network request to make. All of our network requests are made in the `agent.js` file. Navigate to it (TIP: don't forget you can always search for a file in VSCode by searching CMD + P).
+
+Below `Account` add a new variable named `ToDo`. This is where all the network requests around the `ToDo` model will go. This just keeps things organized and much easier to read.
+
+```
+const ToDo = {
+};
+```
+
+Let's add a method called `create`. This method is going to create a new To-Do in our database by calling an endpoint /toods. We use the `.post` method when we want to create something. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
+
+```
+const ToDo = {
+  create: (toDo) =>
+    requests.post(`/todos`, toDo),
+};
+```
 
