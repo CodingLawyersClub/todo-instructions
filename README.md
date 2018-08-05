@@ -248,5 +248,45 @@ create(formValues) {
 
 Believe it or not, you're all synced up on the front end to create To-Dos. Let the page reload, add some text to the input, and click Create. Open up your console by right clicking --> Inspect --> Console. You should see the log you wrote before with some data. That is your To-Do returned from the server :)
 
+# Displaying the To-Dos for a User
+
+Now that we've created our To-Do, let's display them for a particular user!
+
+- First, we need to go to our `agent.js` file to write the method to call our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I dod this.
+
+```
+create: (toDo) => <-- rename to `find` and get rid of the to `toDo` parameter. The endpoint we built doesn't need any parameters besides the user, which is automatically sent up for us. That means we don't need to pass antyhing.
+  requests.post('/todos', toDo), <-- Because we are GETting data data, not POSTing data, we need to make this a `.get`. We also need to get rid of the parameter for the same reason as before.
+```
+
+When it's all said and done our `find` method should look like this:
+```
+find: () =>
+  requests.get('/todos')
+```
+
+Great! Now we have all we need in our `agent` file. Let's go to our `mobX` store to call it!
+
+- Go to toDoStore.js. Let's add a new method to fetch our To-Dos called `findToDos`. Because it's a simple network request, we're going to copy `createToDo` and adjust it. Check out the arrows for how I do this
+
+
+```
+@action
+createToDo = flow(function* (toDo) { <-- rename this function to 'findToDos' to reflect what this function will be doing. We're no longer passing a parameter, so get rid of 'toDo'
+    const response = yield agent.ToDo.create(toDo); <-- call the new function on ToDo we created named 'find' and get rid of the passed parameter, 'toDo' as, again, we're no longer passing a parameter
+    console.log("OUR CREATED TODO", response.toDo); <-- rename the log to 'OUR TODOS' to reflect what this method is returning, and change 'response.toDo' to 'response.toDos' because we're getting back an array of toDos rather than one
+});
+```
+
+When it's all said and done, it should look like this:
+
+```
+@action
+findToDos = flow(function* () {
+    const response = yield agent.ToDo.find();
+    console.log("OUR FOUND TODOS", response.toDos);
+});
+```
+
 
 
