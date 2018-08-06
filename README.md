@@ -10,12 +10,15 @@ React, { Component } from 'react';
 - Next we define a class named `CreatePage`:
   - `export default` says that when this page is imported, we're going to give whoever is calling it this class
   - `class CreatePage extends Component` says that this page is a type of a React Component. This gives us a ton of stuff for free out of the box, and is how we get the awesomeness of React in our app.
+  
 ```
 export default class CreatePage extends Component {
 
 }
 ```
+
 - Next, we need to add the `render()` method. This is where we define what HTML this page will display. For now, just mark something that let's us know we're on this page. A `<div>` is a generic HTML component to display info.
+
 ```
 render() {
   return (
@@ -25,6 +28,7 @@ render() {
 ```
 
 Altogether now, it will look like this:
+
 ```
 import React, { Component } from 'react';
 export default class extends Component {
