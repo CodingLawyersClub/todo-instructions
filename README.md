@@ -847,3 +847,70 @@ async create(formValues) {
 ```
 
 Let the page reload and create a ToDo. It should automatically bring you to the Home page on successful creation :)
+
+# Deploying to Production
+
+## Create an mLab Instance
+
+Right now we're running our database on our computer. This is great for local development, but our users can't access our computer! Luckily, there's a very easy service called mLab that you can access through Heroku. Let's set it up.
+
+1. Login to your Heroku account.
+2. Go to billing: https://dashboard.heroku.com/account/billing. Although we're not doing anything that costs money, you're going to need to add a credit card. To repeat, everything we do here will be free but a credit card is required to configure mLab. Add your credit card. Click the Heroku logo in the top left to go back to the dashboard (or go here https://dashboard.heroku.com/apps)
+2. Go to your backend To-Do app. It should look something like "Your_Last_Name-todo-backend".
+3. Go to the "Resources" tab.
+4. There should be a search field under "Add-ons." Search for "mLab MongoDB" and select it
+5. A modal will pop up for the sandbox plan. Don't touch anything. Just click "Provision"
+
+That's it. Your database is configured.
+
+## Enter Config Vars
+
+We need to set config variables for production. These exist on the server and should never be shared.
+
+1. While on your backend app, click "Settings"
+2. Under Config Vars, click "Reveal Config Vars"
+3. You should see a `MONGO_URI` that was automatically created for you. Let's add some more.
+4. Add  KEY: `SECRET` VALUE: Pick a random string here https://www.random.org/strings/?num=20&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new
+5. Add KEY: `DOMAIN` VALUE: Open a new tab. Go back to heroku.com but this time select the frontend-todo. Go to Settings and scroll down to Domain. Copy the domain. Mine, for example, is https://barabander-todo-frontend.herokuapp.com
+
+ 
+
+## Set Up the Front End
+
+First we have to set our buildpack in Heroku. It is not important what a buildpack is. Just know if you the CLC templates, you'll need it.
+
+1. Go to heroku.com
+2. Select the frontend todo app (mine is barabander-todo-frontend)
+3. Go to the "Settings" tab
+4. Scroll down to "Buildpacks"
+5. Click "Add Buildpack"
+6. Paste the following where it says "Enter Buildpack URL": https://github.com/mars/create-react-app-buildpack.git
+7. Click "Save Changes"
+
+We need to set one Config Var
+1. While on your frontend app, click "Settings"
+2. Under Config Vars, click "Reveal Config Vars"
+3. Add KEY: `NODE_ENV` VALUE: 'production'
+
+## Push to Github
+
+Our app may not be a work of art but let's share it with our friends.
+
+First go to GitUp. You can look at all your changes here. We're going to commit them. Think of committing as saving a particular version. For now you can click "Stage All." At the bottom it will ask for a message. The message should be something that describes the current version of the code base. Write something like, "V1 complete." Then click "Commit" in the bottom right.
+
+Next, go to the terminal. First, navigate to `todo`. Once in `todo` type:
+
+```
+➜  todo git:(master) git push
+```
+
+You just pushed your code to your fork. Wonderful!
+
+Press CMD+N to open up a new terminal. Navigate to `todo-server`. Again, push:
+
+```
+➜  todo-server git:(master) ✗ git push
+```
+
+Great! All your code is uploaded. Because auto deploy is on, it's automatically deploying to your endpoint.
+
