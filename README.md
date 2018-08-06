@@ -753,3 +753,77 @@ render () {
 ```
 
 Let the Create page reload. Click the create button. You should see a spinner appear over the entire form. Look at that loading UI in action!
+
+## Finalize the Create Page
+
+The Create page looks a little lonely. Also, when you successfully create a ToDo nothing happens. Lets fix that.
+
+First, let's import `Layout`. `Layout` gives us the navigation bar on top. Let's also wrap the whole thing in a Container, so import that as well.
+
+```
+import Layout from '../../components/Layout';
+import Container from '../../components/Container';
+```
+
+```
+return (
+    <Layout>
+        <Container>       
+            <Formik // A form library that takes care of a lot of magic for us
+            onSubmit={formValues => {
+                this.create(formValues)
+            }}
+            initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
+            validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
+            render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+            <Form loading={isCreatingToDo}>
+                <Box>
+                    <Box p={10}>
+                        <FormInput name="text" placeholder="Clean the basement" type="text" />
+                    </Box>
+                    <Box p={10}>
+                        <Button type="submit">Create</Button>
+                    </Box>
+            </Box>
+            </Form>
+            )}
+            />
+        </Container>
+    </Layout>
+)
+```
+
+Cool, on reload the Create page should have the navigation bar now and look much nicer.
+
+Ok, so now we just need to do something when the ToDo is successfully created. I like bringing back to the ToDo list. Let's do that.
+
+Go to the `create` method. Add `async` before it. This means that the method is `asynchronous` (99% of the time, it means it's making a network request, which this is doing). Let's add that
+
+```
+async create(formValues) {
+```
+
+When you add the `async`, you can now use something called `await`. Don't get caught up on what this is. Just know you use it on the line you do your network requests. In this case, that's calling our `createToDo` from our `toDoStore`
+
+```
+await this.props.toDoStore.createToDo(formValues);
+```
+
+Once this is complete, the line after it will run. We want to switch pages, to go back to the home page. How do we switch pages? Remember `this.props.history.push`? Home is `/` (because it's the entry point), so it's going to look like this.
+
+```
+ this.props.history.push("/");
+
+```
+
+So, this is what your final `create` method should look like
+
+```
+async create(formValues) {
+    await this.props.toDoStore.createToDo(formValues);
+    this.props.history.push("/");
+} 
+```
+
+Let the page reload and create a ToDo. It should automatically bring you to the Home page on successful creation :)
+
