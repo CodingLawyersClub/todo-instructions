@@ -183,6 +183,7 @@ Great, now this new store is in your app! It doesn't do anything yet though. Let
 
 ```
 const ToDo = {
+
 };
 ```
 
