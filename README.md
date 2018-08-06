@@ -500,10 +500,6 @@ The whole `Home/index.js` should look like this:
 
 ```
 import React, { Component } from 'react';
-import styled from 'styled-components';
-import breakpoint from 'styled-components-breakpoint';
-import { dark } from '../../utils/colors';
-import { navbarHeight } from '../../utils/sizes';
 import ToDoRow from '../../components/ToDoRow';
 import Table from '../../components/Table';
 import Layout from '../../components/Layout'
