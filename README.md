@@ -1,17 +1,17 @@
 # Display The Create Page
 
-- First Sign Up. It doesn't matter what username or password you use. You'll need to be logged in.
-- Create a folder under components named “Create”
-- Create a file inside of “Create” folder named “index.js” This file becomes the default when ‘components/Create’ is imported
-- First, we import React. This pulls in the react library and is essential for creating our page:
+## Create Page Structure
+
+First Sign Up. It doesn't matter what username or password you use. You'll need to be logged in.
+Create a folder under components named “Create”
+Create a file inside of “Create” folder named “index.js” This file becomes the default when ‘components/Create’ is imported
+First, we import React. This pulls in the react library and is essential for creating our page:
 
 ```
 React, { Component } from 'react';
 ```
 
-- Next we define a class named `CreatePage`:
-  - `export default` says that when this page is imported, we're going to give whoever is calling it this class
-  - `class CreatePage extends Component` says that this page is a type of a React Component. This gives us a ton of stuff for free out of the box, and is how we get the awesomeness of React in our app.
+Next we define a class named `CreatePage`:
   
 ```
 export default class CreatePage extends Component {
@@ -19,7 +19,11 @@ export default class CreatePage extends Component {
 }
 ```
 
-- Next, we need to add the `render()` method. This is where we define what HTML this page will display. For now, just mark something that let's us know we're on this page. A `<div>` is a generic HTML component to display info.
+`export default` says that when this page is imported, we're going to give whoever is calling it this class
+`class CreatePage extends Component` says that this page is a type of a React Component. This gives us a ton of stuff for free out of the box, and is how we get the awesomeness of React in our app.
+
+
+Next, we need to add the `render()` method. This is where we define what HTML this page will display. For now, just mark something that let's us know we're on this page. A `<div>` is a generic HTML component to display info.
 
 ```
 render() {
@@ -42,7 +46,7 @@ export default class extends Component {
 }
 ```
 
-# Link Up the Route
+## Link Up the Route
 
 Go to the `routes.js` at `src/routes.js`
 Import the create page:
@@ -62,9 +66,9 @@ Above `<Route component={Home} />` put the following:
 This says when we go to our website, `localhost:3005/create` /create, we're going to automatically go to our Create page. You should see the create page loaded
 ![alt text](https://s3.amazonaws.com/clc-images/CreatePage.png)
 
-# Create a Form With A Submit
+## Create a Form With A Submit
 
-- Import a Button, a Form component, a FormInput, Yup, Formik, and Box. You'll see what all these do in practice soon.
+Import a Button, a Form component, a FormInput, Yup, Formik, and Box. You'll see what all these do in practice soon.
 
 ```
 import { Button } from 'semantic-ui-react'
@@ -75,7 +79,7 @@ import { Formik } from 'formik';
 import { Box } from 'rebass';
 ```
 
-- First, let's set up a validator. A validator is used to make sure the user doesn't submit data they shouldn't. When you've submitted forms and you've gotten a "password isn't long enough" message, a validator is what is checking the logic. We're goign to use a validation library called Yup because it's super simple to use. Paste the following code, and we'll walk through it:
+First, let's set up a validator. A validator is used to make sure the user doesn't submit data they shouldn't. When you've submitted forms and you've gotten a "password isn't long enough" message, a validator is what is checking the logic. We're goign to use a validation library called Yup because it's super simple to use. Paste the following code, and we'll walk through it:
 
 ```
 const FormSchema = Yup.object().shape({
@@ -84,8 +88,8 @@ const FormSchema = Yup.object().shape({
 });
 ```
 
-- `const FormSchema` defines a variable named FormSchema
-- `Yup.object().shape()...` defines the validation object. This says what our form is going to be expecting. We're only going to have one field for the text of our To-Do:
+`const FormSchema` defines a variable named FormSchema
+`Yup.object().shape()...` defines the validation object. This says what our form is going to be expecting. We're only going to have one field for the text of our To-Do:
 
 ```
 text: Yup.string()
@@ -118,10 +122,11 @@ render () {
 
 Save the file and watch the page reload. You just set up your first form! Try clicking the "Create" button without putting in any text. That's the FormSchema in action :).
 
-# Link Up With MobX and Hit the Internet
-- Now that we have our form good to go, we need something to happen when you click Create. We use MobX to initiate our network requests and load data. So let's get started creating what we call a MobX store.
-- Go to `src/stores/` and create a new file called `toDoStore.js`
-- At the top of `toDoStore.js` import the following:
+## Link Up With MobX and Hit the Internet
+
+Now that we have our form good to go, we need something to happen when you click Create. We use MobX to initiate our network requests and load data. So let's get started creating what we call a MobX store.
+Go to `src/stores/` and create a new file called `toDoStore.js`
+At the top of `toDoStore.js` import the following:
 
 ```
 import { observable, action, flow } from 'mobx';
@@ -131,7 +136,7 @@ import error from '../utils/error';
 
 You'll see these imports in action later.
 
-- Define a class named `ToDoStore`:
+Define a class named `ToDoStore`:
 
 ```
 class ToDoStore {
@@ -139,13 +144,13 @@ class ToDoStore {
 }
 ```
 
-- Finally export the store:
+Finally export the store:
 
 ```
 export default new ToDoStore();
 ```
 
-- Altogether `toDoStore.js` should look like this:
+Altogether `toDoStore.js` should look like this:
 
 ```
 import { observable, action, reaction } from 'mobx';
@@ -157,15 +162,17 @@ class ToDoStore {
 export default new ToDoStore();
 ```
 
-- Go to `src/index.js`. We're now going to add this store we created to our app.
+## Add the `toDoStore` to our App
 
-- First, import it on line 13:
+Go to `src/index.js`. We're now going to add this store we created to our app.
+
+First, import it on line 13:
 
 ```
 import toDoStore from './stores/toDoStore';
 ```
 
-- Then add it to the list of stores on line 23:
+Then add it to the list of stores on line 23:
 
 ```
 const stores = {
@@ -178,9 +185,11 @@ const stores = {
 
 Great, now this new store is in your app! It doesn't do anything yet though. Let's change that!
 
-- First, we need to define our network request to make. All of our network requests are made in the `agent.js` file. Navigate to it (TIP: don't forget you can always search for a file in VSCode by searching CMD + P).
+## Building Our Requests
 
-- Below `Account` add a new variable named `ToDo`. This is where all the network requests around the `ToDo` model will go. This just keeps things organized and much easier to read.
+First, we need to define our network request to make. All of our network requests are made in the `agent.js` file. Navigate to it (TIP: don't forget you can always search for a file in VSCode by searching CMD + P).
+
+Below `Account` add a new variable named `ToDo`. This is where all the network requests around the `ToDo` model will go. This just keeps things organized and much easier to read.
 
 ```
 const ToDo = {
@@ -188,7 +197,7 @@ const ToDo = {
 };
 ```
 
-- Let's add a method called `create`. This method is going to create a new To-Do in our database by calling an endpoint /toods. We use the `.post` method when we want to create something. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
+Let's add a method called `create`. This method is going to create a new To-Do in our database by calling an endpoint /toods. We use the `.post` method when we want to create something. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
 
 ```
 const ToDo = {
@@ -197,7 +206,7 @@ const ToDo = {
 };
 ```
 
-- Export the ToDo so other files can know about its existence:
+Export the ToDo so other files can know about its existence:
 
 ```
 export default {
@@ -207,8 +216,10 @@ export default {
 };
 ```
 
-- Go back to `toDoStore.js`. Let's link everything together.
-- Create a new action called `createToDo`. It should look like this:
+## Write the `createToDo` Function
+
+Go back to `toDoStore.js`. Let's link everything together.
+Create a new action called `createToDo`. It should look like this:
 
 ```
 @action
@@ -224,7 +235,7 @@ That's all you need to know for now.
 
 Let's fill this function!
 
-- Inside of `createToDo` let's pass in the toDo. This is the text from our input before. Let's also call that `create` method we put in `agent` on the `ToDo` object. The `yield` says that we're making a network request, and do not move on to running the next line until the result comes back, which we're defining as `response`. We're going to `console.log` the result, which will print it out for us to see in the browser. It will look like this:
+Inside of `createToDo` let's pass in the toDo. This is the text from our input before. Let's also call that `create` method we put in `agent` on the `ToDo` object. The `yield` says that we're making a network request, and do not move on to running the next line until the result comes back, which we're defining as `response`. We're going to `console.log` the result, which will print it out for us to see in the browser. It will look like this:
 
 ```
 @action
@@ -234,8 +245,9 @@ createToDo = flow(function* (toDo) {
 });
 ```
 
-# Link Up Our createToDo() method with our Create page
-- Go back to `Create/index.js`. Add the following to get our MobX store into our create page:
+## Link Up Our `createToDo()` method with our Create page
+
+Go back to `Create/index.js`. Add the following to get our MobX store into our create page:
 
 ```
 import { inject, observer } from 'mobx-react' <-- Import this on top
@@ -282,7 +294,9 @@ Believe it or not, you're all synced up on the front end to create To-Dos. Let t
 
 Now that we've created our To-Do, let's display them for a particular user!
 
-- First, we need to go to our `agent.js` file to write the method to call our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I did this.
+## Write the `find()` Method
+
+First, we need to go to our `agent.js` file to write the method to call our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I did this.
 
 ```
 create: (toDo) => <-- rename to `find` and get rid of the to `toDo` parameter. The endpoint we built doesn't need any parameters besides the user, which is automatically sent up for us. That means we don't need to pass antyhing.
@@ -296,9 +310,11 @@ find: () =>
   requests.get('/todos')
 ```
 
-Great! Now we have all we need in our `agent` file. Let's go to our `mobX` store to call it!
+Great! Now we have all we need in our `agent` file. Let's go to our MobX store to call it!
 
-- Go to toDoStore.js. Let's add a new method to fetch our To-Dos called `findToDos`. Because it's a simple network request, we're going to copy `createToDo` and adjust it. Check out the arrows for how I did this:
+## Write the `findToDos()` Method
+
+Go to toDoStore.js. Let's add a new method to fetch our To-Dos called `findToDos`. Because it's a simple network request, we're going to copy `createToDo` and adjust it. Check out the arrows for how I did this:
 
 ```
 @action
@@ -318,9 +334,11 @@ findToDos = flow(function* () {
 });
 ```
 
+## Call `findToDos()` from `componentDidMount`
+
 Now, we need to call this `findToDos` from somewhere. Let's set that up!
 
-- Go to `Home/index.js`. Above the `render()` method, add a new method named `componentDidMount`.
+Go to `Home/index.js`. Above the `render()` method, add a new method named `componentDidMount`.
 
 ```
 componentDidMount() {
@@ -328,9 +346,9 @@ componentDidMount() {
 }
 ```
 
-- `componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3005), this method will be called. Let's fetch our To-Dos in here!
+`componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3005), this method will be called. Let's fetch our To-Dos in here!
 
-- Like before, we need to import our `toDoStore` into our page. We do that the same way as the `Create` page.
+Like before, we need to import our `toDoStore` into our page. We do that the same way as the `Create` page.
 
 ```
 import { inject, observer } from 'mobx-react' <-- Import this on top
@@ -597,11 +615,11 @@ Between `<Heading />` and `<Table />` add the following:
 ```
 
 Let's walk through each piece:
-- `Flex` is a layout component. It helps with aligning things on the page. `justifyContent` means which way to align items. `flex-end` means to push everything to the right. So all this is saying is, everything inside of `<Flex />` I want to align right.
-- `Box` is what goes inside of `Flex`. Think of `Flex` and `Box` as peanut-butter and jelly. They always go together. `Flex` says how to align the `Box`. Because our `Flex` is `flex-end`, it is our `Box` that is going to be pushed all the way to the right.
-- `Button` is pretty self explanatory. This `Button` lives inside of my `Box` which is being pushed all the way to the right. `content` is what the button will say. `icon` is if we want it to have an icon. A list of icons can be found online, but don't worry about that for now. `labelPosition` says where you want the button to go, which I want it on the right of my "New" text.
- - `onClick` is one of the most important methods. It does what you'd think it does. When this button is clicked, whatever is inside of that arrow is going to be called
- - `this.props.history.push` is how we navigate to pages. the `/create` page is where we want to go. Don't worry too much about what's going on here. Just remember, if you want to go to a different page we created, you use `this.props.history.push("/PAGE_ROUTE_HERE")`. We defined our page route in `src/routes/index.js` if you forget the route name.
+`Flex` is a layout component. It helps with aligning things on the page. `justifyContent` means which way to align items. `flex-end` means to push everything to the right. So all this is saying is, everything inside of `<Flex />` I want to align right.
+`Box` is what goes inside of `Flex`. Think of `Flex` and `Box` as peanut-butter and jelly. They always go together. `Flex` says how to align the `Box`. Because our `Flex` is `flex-end`, it is our `Box` that is going to be pushed all the way to the right.
+`Button` is pretty self explanatory. This `Button` lives inside of my `Box` which is being pushed all the way to the right. `content` is what the button will say. `icon` is if we want it to have an icon. A list of icons can be found online, but don't worry about that for now. `labelPosition` says where you want the button to go, which I want it on the right of my "New" text.
+ `onClick` is one of the most important methods. It does what you'd think it does. When this button is clicked, whatever is inside of that arrow is going to be called
+ `this.props.history.push` is how we navigate to pages. the `/create` page is where we want to go. Don't worry too much about what's going on here. Just remember, if you want to go to a different page we created, you use `this.props.history.push("/PAGE_ROUTE_HERE")`. We defined our page route in `src/routes/index.js` if you forget the route name.
 
 Your page should look like this:
 
@@ -829,4 +847,3 @@ async create(formValues) {
 ```
 
 Let the page reload and create a ToDo. It should automatically bring you to the Home page on successful creation :)
-
