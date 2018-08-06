@@ -559,6 +559,94 @@ You should feel super proud of yourself. I know there's a ton of moving pieces r
 
 Right now we have everything working but our app kind of sucks. Let's clean it up to be much more production friendly to share with our friends.
 
+## Create a Logged Out State On ToDo list page
+
+We have made it so users can only see their own ToDos. The problem is, if you're not logged in, you won't see anything and our request via `findToDos()` will fail. Let's have a logged out state.
+
+On `Home/index.js` add the `userStore`. This came with the template so don't worry too much about it, but basically it keeps track of the current user for us.
+
+```
+@inject("toDoStore", "userStore")
+```
+
+The `userStore` has an `@observable` called `currentUser`. The `currentUser` is the logged in user. If there is no logged in user, it is undefined. We can use this variable to check if our user is logged in or not to check whether or not we should call `findToDos()`
+
+Change `componentDidMount()` to look like the following:
+
+```
+componentDidMount() {
+  if (this.props.userStore.currentUser) {
+    this.props.toDoStore.findToDos()
+  }
+}
+```
+
+See what's going on here? We find the property called `currentUser` on the `userStore`. If there is a value there, we know the user is logged in, and we make the request. If not, well, the block of code `this.props.toDoStore.findToDos()` is never run! Perfect!
+
+Let's change the UI to conditional display. We're going to user a neat little trick. Look at the following block of code:
+
+```
+{true && <div>I will display!</div>}
+```
+
+Because the first part of this statement is `true` the second part is going to be displayed. That is in contrast to:
+
+```
+{false && <div>I will NOT display</div>}
+```
+
+OR
+
+```
+{undefined && <div>I will NOT display</div>}
+```
+
+Because the first part of this statement is `false` or `undefined` the second part is NOT going to display. The compiler stops looking because the first part is `false` or `undefined`. Why look at the rest if the first part is `false` or `undefined`?
+
+We can use this neat feature to display info based on a logged in user. Instead of false/undefined vs true, we're going to use `currentUser` vs an `undefined currentUser`
+
+Replace the relevant parts as follows:
+
+```
+{currentUser && <div>
+  <Flex justifyContent="flex-end">
+    <Box>
+      <Button onClick={() => this.props.history.push("/create") } content='New' icon='plus' labelPosition='right' />
+    </Box>
+  </Flex>
+  <Table
+  isLoading={isFetchingToDos}
+  striped
+  selectable                
+  headings={["Text", "Created At"]}
+  rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
+  />
+</div>}
+{!currentUser && <div>Login / Sign-Up to to see your To-Dos!</div>}
+```
+
+We wrapped the `<Flex>` and `<Table>` elements in a `<div>` because we only want them to show if there is a `currentUser`. If there is no `currentUser` (which is `!currentUser`) we want to tell them to login or sign-up.
+
+## Turning `Create` into a Private Route
+
+Our `Create` page requires a logged in user. Lets change our route to require that.
+
+Go to `routes/index.js`
+
+We have a special component called `<PrivateRoute` which requires a logged in user. All you need to do is turn this:
+
+```
+<Route path="/create" component={CreatePage} />
+```
+
+Into a `<PrivateRoute />`
+
+```
+<PrivateRoute path="/create" component={CreatePage} />
+```
+
+Now when you navigate to Create page, it will kick the user home if they're not logged in.
+
 ## Linking to the Create Page
 
 Expecting our users to navigate to `localhost:3005/create` is kind of ridiculous. Let's create a button that links to it.
