@@ -252,7 +252,7 @@ Believe it or not, you're all synced up on the front end to create To-Dos. Let t
 
 Now that we've created our To-Do, let's display them for a particular user!
 
-- First, we need to go to our `agent.js` file to write the method to call our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I dod this.
+- First, we need to go to our `agent.js` file to write the method to call our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I did this.
 
 ```
 create: (toDo) => <-- rename to `find` and get rid of the to `toDo` parameter. The endpoint we built doesn't need any parameters besides the user, which is automatically sent up for us. That means we don't need to pass antyhing.
@@ -267,7 +267,7 @@ find: () =>
 
 Great! Now we have all we need in our `agent` file. Let's go to our `mobX` store to call it!
 
-- Go to toDoStore.js. Let's add a new method to fetch our To-Dos called `findToDos`. Because it's a simple network request, we're going to copy `createToDo` and adjust it. Check out the arrows for how I do this
+- Go to toDoStore.js. Let's add a new method to fetch our To-Dos called `findToDos`. Because it's a simple network request, we're going to copy `createToDo` and adjust it. Check out the arrows for how I did this
 
 
 ```
