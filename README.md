@@ -97,7 +97,7 @@ Now, it's time to set up our form to put our validation in. Copy the following c
 render () {
     return (
         <Formik // A form library that takes care of a lot of magic for us
-        initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
+        initialValues={{text: ''}}
         validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
         render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
         <Form>
