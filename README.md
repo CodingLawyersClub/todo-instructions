@@ -94,25 +94,25 @@ text: Yup.string()
 Now, it's time to set up our form to put our validation in. Copy the following code for the `render()` method. I have put comments to explain what each does.
 
 ```
-  render () {
-      return (
-          <Formik // A form library that takes care of a lot of magic for us
-          initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
-          validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
-          render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
-          <Form>
-              <Box>
-                  <Box p={10}>
-                      <FormInput name="text" placeholder="Clean the basement" type="text" />
-                  </Box>
-                  <Box p={10}>
-                      <Button type="submit">Create</Button>
-                  </Box>
-             </Box>
-          </Form>
-          )}
-      />)    
-  }
+render () {
+    return (
+        <Formik // A form library that takes care of a lot of magic for us
+        initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
+        validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
+        render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+        <Form>
+            <Box>
+                <Box p={10}>
+                    <FormInput name="text" placeholder="Clean the basement" type="text" />
+                </Box>
+                <Box p={10}>
+                    <Button type="submit">Create</Button>
+                </Box>
+           </Box>
+        </Form>
+        )}
+    />)    
+}
 ```
 
 Save the file and watch the page reload. You just set up your first form! Try clicking the "Create" button without putting in any text. That's the FormSchema in action :).
