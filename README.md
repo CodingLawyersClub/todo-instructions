@@ -758,17 +758,21 @@ Let the Create page reload. Click the create button. You should see a spinner ap
 
 The Create page looks a little lonely. Also, when you successfully create a ToDo nothing happens. Lets fix that.
 
-First, let's import `Layout`. `Layout` gives us the navigation bar on top. Let's also wrap the whole thing in a Container, so import that as well.
+First, let's import `Layout`. `Layout` gives us the navigation bar on top. Let's also wrap the whole thing in a `Container`, so import that as well. Finally, I want to give the page a `<Heading>` explaining what this page is for. Your imports should look like this:
 
 ```
 import Layout from '../../components/Layout';
 import Container from '../../components/Container';
+import Heading from '../../components/Heading';
 ```
+
+And your new components should be put in like this:
 
 ```
 return (
     <Layout>
-        <Container>       
+        <Container>
+            <Heading>Create a To-Do!</Heading>
             <Formik // A form library that takes care of a lot of magic for us
             onSubmit={formValues => {
                 this.create(formValues)
@@ -813,7 +817,6 @@ Once this is complete, the line after it will run. We want to switch pages, to g
 
 ```
  this.props.history.push("/");
-
 ```
 
 So, this is what your final `create` method should look like
