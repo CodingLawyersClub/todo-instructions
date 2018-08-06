@@ -654,4 +654,102 @@ export default class Splash extends Component {
 
 Let it reload. Try clicking "New". You should be brought to the `/create` page. Everything should be looking much better now. Let's add some loading indicators.
 
+## Loading Indicators
 
+Internet requests take time and users freak out when they take action but appears nothing is happening. This is why almost every modern website you use has a spinner to show feedback that it's working on the request. Let's add some spinners to show when things are loading.
+
+First, go to `toDoStore.js`. Add two `@observable` properties
+
+```
+@observable isCreatingToDo;
+@observable isFetchingToDos;
+```
+
+These variables are going to be how we track loading for creating and fetching To-Dos. Notice the `is` in front of each variable. That is convention for variables that are true or false (known as Boolean variables). Now let's use them:
+
+```
+@action
+createToDo = flow(function* (toDo) {
+    this.isCreatingToDo = true;
+    const response = yield agent.ToDo.create(toDo);
+    this.isCreatingToDo = false;
+});
+
+@action
+findToDos = flow(function* () {
+    this.isFetchingToDos = true;
+    const response = yield agent.ToDo.find();
+    this.toDos = response.toDos;
+    this.isFetchingToDos = false;
+});
+```
+As you can see, we simply set the variable to `true` right before fetching. After the fetch as completed (after the `yield`, we set them back to `false`. Think of it like turning a light switch on to look for something in a room, and when you've found it, turning the light switch back off.
+
+Now, let's use them on our component. Go back to `Home/index.js`
+
+Where we pull off the `toDos` now we're also going to pull off one of our new variables, isFetchingToDos:
+
+```
+const { toDos, isFetchingToDos } = this.props.toDoStore;                
+```
+
+Great, now we have our loading variable. Like with our `toDos` `@observable`, our page will automatically watch the `isFetchingToDos` variable.
+
+`<Table />` has some magic that will show a spinner when `isLoading` is set to `true` and hide the spinner when `isLoading` is set to `false`. `<Table />` should now look like this:
+
+```
+<Table
+isLoading={isFetchingToDos}
+striped
+selectable                
+headings={["Text", "Created At"]}
+rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
+/>
+```
+
+Let the page reload. You should see a flash of a spinner now. It's extremely fast because the network request is straight to the server running on our computer. In production, it will prove very useful.
+
+Go to the Create page. Let's do the same dance.
+
+Add the `isCreatingToDo` in your `render()` method before the `return`
+
+```
+const { isCreatingToDo } = this.props.toDoStore;
+```
+
+Our `<Form />` has a special component called `loading`. Let's pass it `isCreatingToDo`.
+
+```
+<Form loading={isCreatingToDo}>
+```
+
+Your `render()` should look like this now:
+
+```
+render () {
+    const { isCreatingToDo } = this.props.toDoStore;
+
+    return (
+        <Formik // A form library that takes care of a lot of magic for us
+        onSubmit={formValues => {
+            this.create(formValues)
+        }}
+        initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
+        validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
+        render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+        <Form loading={isCreatingToDo}>
+            <Box>
+                <Box p={10}>
+                    <FormInput name="text" placeholder="Clean the basement" type="text" />
+                </Box>
+                <Box p={10}>
+                    <Button type="submit">Create</Button>
+                </Box>
+           </Box>
+        </Form>
+        )}
+    />)    
+}
+```
+
+Let the Create page reload. Click the create button. You should see a spinner appear over the entire form. Look at that loading UI in action!
