@@ -215,7 +215,7 @@ import { inject, observer } from 'mobx-react' <-- Import this on top
 ...
 @inject("toDoStore")
 @observer
-export default class extends Component {
+export default class Create extends Component {
 ```
 MAKE SURE THE `@inject`, `@observer` and `export` statement ARE TOUCHING EXACTLY HOW YOU SEE ABOVE.
 
@@ -274,7 +274,7 @@ Great! Now we have all we need in our `agent` file. Let's go to our `mobX` store
 @action
 createToDo = flow(function* (toDo) { <-- rename this function to 'findToDos' to reflect what this function will be doing. We're no longer passing a parameter, so get rid of 'toDo'
     const response = yield agent.ToDo.create(toDo); <-- call the new function on ToDo we created named 'find' and get rid of the passed parameter, 'toDo' as, again, we're no longer passing a parameter
-    console.log("OUR CREATED TODO", response.toDo); <-- rename the log to 'OUR TODOS' to reflect what this method is returning, and change 'response.toDo' to 'response.toDos' because we're getting back an array of toDos rather than one
+    console.log("OUR CREATED TODO", response.toDo); <-- rename the log to 'OUR FOUND TODOS' to reflect what this method is returning, and change 'response.toDo' to 'response.toDos' because we're getting back an array of toDos rather than one
 });
 ```
 
@@ -288,5 +288,34 @@ findToDos = flow(function* () {
 });
 ```
 
+Now, we need to call this `findToDos` from somewhere. Let's set that up!
 
+- Go to `Home/index.js`. Above the `render()` method, add a new method named `componentDidMount`.
+
+```
+componentDidMount() {
+}
+```
+
+- `componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3000), this method will be called. Let's fetch our To-Dos in here!
+
+- Like before, we need to import our `toDoStore` into our page. We do that the same way as the `Create` page.
+
+```
+import { inject, observer } from 'mobx-react' <-- Import this on top
+...
+@inject("toDoStore")
+@observer
+export default class Home extends Component {
+```
+
+Great! Now we have access to our `findToDos` via `props`. Let's call it like before:
+
+```
+componentDidMount() {
+  this.props.toDoStore.findToDos()
+}
+```
+
+That's it. Now save, and reload the page. Open up the chrome inspector and go to console. You should see your `OUR FOUND TODOS` logged. Everything is working. Now we need to display our To-Dos!
 
