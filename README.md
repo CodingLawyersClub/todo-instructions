@@ -97,7 +97,7 @@ Now, it's time to set up our form to put our validation in. Copy the following c
 render () {
     return (
         <Formik // A form library that takes care of a lot of magic for us
-        initialValues={{text: ''}}
+        initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
         validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
         render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
         <Form>
@@ -348,4 +348,119 @@ componentDidMount() {
 ```
 
 That's it. Now save, and reload the page. Open up the chrome inspector and go to console. You should see your `OUR FOUND TODOS` logged. Everything is working. Now we need to display our To-Dos!
+
+# Displaying our To-Dos
+
+Logging To-Dos is fun but I think it's way more fun to see them in a Table! Let's do that now.
+We haven't really used what MobX is awesome for which is maintaining state, but that's about to change.
+
+In toDoStore.js let's add a new property called `toDos` right below the class definition. We're going to mark it as `@observable` and set it to be a blank array `[]`
+
+```
+...
+
+class ToDoStore {
+    @observable toDos = [];
+...
+````
+
+`@observable` is some MobX magic that says: "Look at this variable, `toDos` and when it changes, I want you to automatically redraw my page with the new values inside." I like to think of it as a flag that I know my components are watching to see if they change. The blank array we set because we currently don't have any ToDos, so our list is currently blank!
+
+Now, go to the `findToDos` method, remove the `console.log` and and add the following:
+
+```
+@action
+findToDos = flow(function* () {
+    const response = yield agent.ToDo.find();
+    this.toDos = response.toDos; <-- Add this!
+});
+
+```
+
+This simply sets our `@observable` array `toDos` to be what we get back from our server. Great, now let's use this value in our component.
+
+First, we need to create a component that displays our To-Do. One simple way to do this is to put it in a table. Every table has table rows, so we're going to make a `ToDoRow` component.
+
+Create a new file under components named `ToDoRow.js`. Like all React components the bare structure should look like this:
+
+```
+import React, { Component } from 'react';
+
+export default class TableCell extends Component {
+      
+  render() {
+  
+  }
+}
+```
+
+Let's fill this in!
+
+First we need to import a couple of things in addition to React. Let's do that.
+
+```
+import { Table } from 'semantic-ui-react';
+import dates from '../utils/dates';
+```
+
+`semantic-ui-react` is an amazing library that gives us a ton of UI for free. It is going to do most of the heavy lifting to make our table row look nice
+
+`dates` is a library I made that is a wrapper for an amazing library named `moment.js`. Don't worry too much about this one.
+
+Great, now let's create our table row.
+
+Each row is going to be passed a specific `toDo` to display via the `props`. I wasn't kidding when I told you props are magic! Let's get them off of props.
+
+```
+ const { toDo } = this.props;
+```
+
+This is a useful short hand you'll see a lot. It is identical to doing the following:
+
+```
+const toDo = this.props.toDo
+```
+
+the `const { toDo }` is pulling and defining at the same time. Do whichever you feel more comfortable with.
+
+Now we need to put this `toDo` we pulled off our props to use. We're going to use the `Table.Row` and `Table.Cell` off of `semantic-ui`. It's going to look something like this:
+
+```
+return (
+    <Table.Row>
+      <Table.Cell>{toDo.text}</Table.Cell>
+      <Table.Cell>{dates.formatDate(toDo.createdAt)}</Table.Cell>
+    </Table.Row>
+)
+```
+
+There's a lot going on here, so let's walk through it. First, were wrapping everything in a `Table.Row` because that is what this component is supposed to return. Inside of our `Row` we have two cells. One cell we want to display the ToDo's text, and the other we want to display the date it was created. In React, we display text to the page with those `{ }` brackets. The first cell is displaying the `text` off the ToDo, the second is displaying the `createdAt` date with some formatting from my date library. The whole component should look like this:
+
+```
+import React, { Component } from 'react';
+import { Table } from 'semantic-ui-react';
+import dates from '../utils/dates';
+
+export default class TableCell extends Component {
+      
+  render() {
+    const { toDo } = this.props;
+    return (
+        <Table.Row>
+          <Table.Cell>{toDo.text}</Table.Cell>
+          <Table.Cell>{dates.formatDate(toDo.createdAt)}</Table.Cell>
+        </Table.Row>
+    )
+  }
+}
+```
+
+Boom, you've created a component! Let's import it and put it to use!
+
+
+Go to `Home/index.js` and import two things:
+
+```
+
+```
 
