@@ -2,7 +2,8 @@
 
 - Create a folder under components named “Create”
 - Create a file inside of “Create” folder named “index.js” This file becomes the default when ‘components/Create’ is imported
-- First, we import React. This pulls in the react library and is essential for creating our page: 
+- First, we import React. This pulls in the react library and is essential for creating our page:
+
 ```
 React, { Component } from 'react';
 ```
@@ -43,7 +44,7 @@ export default class extends Component {
 # Link Up the Route
 
 Go to the `routes.js` at `src/routes.js`
-- Import the create page:
+Import the create page:
 
 ```
 import CreatePage from '../components/Create';
@@ -321,6 +322,7 @@ Now, we need to call this `findToDos` from somewhere. Let's set that up!
 
 ```
 componentDidMount() {
+
 }
 ```
 
