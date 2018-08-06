@@ -537,3 +537,122 @@ Save and run. You should see your table of ToDos for the logged in user! Woohoo!
 
 You should feel super proud of yourself. I know there's a ton of moving pieces right now and you certainly will not understand everything that goes on. Just know that it really doesn't get any more complicated than this. You've built an app that can create and fetch data with a logged in user. That is 90% of the work out there. Let's clean things up a little bit and push to production to show our friends.
 
+# Clean Up
+
+Right now we have everything working but our app kind of sucks. Let's clean it up to be much more production friendly to share with our friends.
+
+## Linking to the Create Page
+
+Expecting our users to navigate to `localhost:3005/create` is kind of ridiculous. Let's create a button that links to it.
+
+Navigate back to `Home.index.js`.
+
+Lets import some stuff to clean this page up. Add the following:
+```
+import Heading from '../../components/Heading';
+import { Box, Flex } from 'rebass';
+import { Button } from 'semantic-ui-react';
+import Container from '../../components/Container';
+```
+
+`Heading` we use for the title of the page. It's just big text.
+`Box` and `Flex` we use for layouting purposes. You'll see this in action soon
+`Button` is from our amazing `semantic-ui-react` library and gives us a really nice button for free
+`Container` is a wrapper component that gives some padding
+
+First, everything feels very cramped. We have a component that adds padding named `Container`. Let's wrap our `<Table />` inside of a `Container`. Let's also put inside of this container a `<Header />` above our `<Table />` to clearly display what this page is. Finally, let's rename the `<title />`, which is what you see on the tab, to "ToDo List". It should look like this:
+
+```
+render() {
+    const { toDos } = this.props.toDoStore;        
+    return (
+        <Layout showLogo={true}>
+          <Helmet>
+            <title>New Website</title>
+          </Helmet>
+          <Container>
+            <Heading>ToDo List</Heading>
+            <Table
+            striped
+            selectable                
+            headings={["Text", "Created At"]}
+            rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
+            />
+          </Container>
+        </Layout>
+    )
+}
+```
+
+Let the page reload. It should start looking better already. Let's link to the Create page now.
+
+Between `<Heading />` and `<Table />` add the following:
+
+```
+<Flex justifyContent="flex-end">
+  <Box>
+    <Button onClick={() => this.props.history.push("/create") } content='New' icon='plus' labelPosition='right' />
+  </Box>
+</Flex>
+```
+
+Let's walk through each piece:
+- `Flex` is a layout component. It helps with aligning things on the page. `justifyContent` means which way to align items. `flex-end` means to push everything to the right. So all this is saying is, everything inside of `<Flex />` I want to align right.
+- `Box` is what goes inside of `Flex`. Think of `Flex` and `Box` as peanut-butter and jelly. They always go together. `Flex` says how to align the `Box`. Because our `Flex` is `flex-end`, it is our `Box` that is going to be pushed all the way to the right.
+- `Button` is pretty self explanatory. This `Button` lives inside of my `Box` which is being pushed all the way to the right. `content` is what the button will say. `icon` is if we want it to have an icon. A list of icons can be found online, but don't worry about that for now. `labelPosition` says where you want the button to go, which I want it on the right of my "New" text.
+ - `onClick` is one of the most important methods. It does what you'd think it does. When this button is clicked, whatever is inside of that arrow is going to be called
+ - `this.props.history.push` is how we navigate to pages. the `/create` page is where we want to go. Don't worry too much about what's going on here. Just remember, if you want to go to a different page we created, you use `this.props.history.push("/PAGE_ROUTE_HERE")`. We defined our page route in `src/routes/index.js` if you forget the route name.
+
+Your page should look like this:
+
+```
+import React, { Component } from 'react';
+import ToDoRow from '../../components/ToDoRow';
+import Table from '../../components/Table';
+import Layout from '../../components/Layout'
+import { Helmet } from "react-helmet";
+import { inject, observer } from 'mobx-react';
+import Heading from '../../components/Heading';
+import { Box, Flex } from 'rebass';
+import { Button } from 'semantic-ui-react';
+import Container from '../../components/Container';
+
+@inject("toDoStore")
+@observer
+export default class Splash extends Component {
+
+    componentDidMount() {
+      this.props.toDoStore.findToDos()
+    }
+
+    render() {
+        const { toDos } = this.props.toDoStore;        
+        return (
+            <Layout showLogo={true}>
+              <Helmet>
+                <title>ToDo List</title>
+              </Helmet>
+              <Container>
+                <Heading>ToDo List</Heading>
+                <Flex justifyContent="flex-end">
+                  <Box>
+                    <Button onClick={() => this.props.history.push("/create") } content='New' icon='plus' labelPosition='right' />
+                  </Box>
+                </Flex>
+                <Table
+                isLoading={false}
+                striped
+                selectable                
+                headings={["Text", "Created At"]}
+                rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
+                />
+              </Container>
+            </Layout>
+        )
+    }
+}
+```
+
+Let it reload. Try clicking "New". You should be brought to the `/create` page. Everything should be looking much better now. Let's add some loading indicators.
+
+
