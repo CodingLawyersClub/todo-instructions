@@ -1,5 +1,6 @@
 # Display The Create Page
 
+- First Sign Up. It doesn't matter what username or password you use. You'll need to be logged in.
 - Create a folder under components named “Create”
 - Create a file inside of “Create” folder named “index.js” This file becomes the default when ‘components/Create’ is imported
 - First, we import React. This pulls in the react library and is essential for creating our page:
@@ -58,7 +59,7 @@ Above `<Route component={Home} />` put the following:
 <Route path="/create" component={CreatePage} />
 ```
 
-This says when we go to our website, `localhost:3000/create` /create, we're going to automatically go to our Create page. You should see the create page loaded
+This says when we go to our website, `localhost:3005/create` /create, we're going to automatically go to our Create page. You should see the create page loaded
 ![alt text](https://s3.amazonaws.com/clc-images/CreatePage.png)
 
 # Create a Form With A Submit
@@ -327,7 +328,7 @@ componentDidMount() {
 }
 ```
 
-- `componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3000), this method will be called. Let's fetch our To-Dos in here!
+- `componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3005), this method will be called. Let's fetch our To-Dos in here!
 
 - Like before, we need to import our `toDoStore` into our page. We do that the same way as the `Create` page.
 
@@ -461,6 +462,82 @@ Boom, you've created a component! Let's import it and put it to use!
 Go to `Home/index.js` and import two things:
 
 ```
+import ToDoRow from '../../components/ToDoRow';
+import Table from '../../components/Table';
 
 ```
+
+This simply imports a `Table` component I've created along with the `ToDoRow` we just made.
+
+First, lets get our ToDos from the `toDoStore`. This is incredibly simple because they live on our props now. The `@observer` on this component (above the class) tells this component to listen to any `@observables` we defined in our `toDoStore`. Do you remember what we defined as an `@observable`? Our `toDos`! Everytime the `toDos` array changes (like when a network request finishes and fetches data) this component, `Home/index.js` will redraw and pass in the `toDos` in the props. Which means we can do this now:
+
+```
+...
+render() {
+    const { toDos } = this.props.toDoStore;
+...
+```
+
+This simply gets the `toDoStore` and pulls off the `toDos` array we defined earlier. MobX will take care of automatically redrawing everything for us :)
+
+Now
+
+Delete the `<div>` that says `Welcome to your new website!` and replace it with the following:
+
+```
+<Table
+striped
+headings={["Text", "Created At"]}
+rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
+/>
+```
+
+`striped` is some magic that gives us auto striping. Don't worry about this too much.
+`headings` is the headings on our table. They need to be in the same order as our cells we defined on `ToDoRow`. So, the first one is `Text` and the second is `Created At`.
+`rows` is the star of the show. It takes in an array of our `ToDoRow`. We `map` over each `toDo` in our `toDos` array, and pass it to the `ToDoRow` to draw. The `key` is just a unique property that react requires whenever we do a `map`. It's ok if this doesn't make complete sense yet, you're going to be seeing `map` a ton and I promise it will become clear.
+
+The whole `Home/index.js` should look like this:
+
+```
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import breakpoint from 'styled-components-breakpoint';
+import { dark } from '../../utils/colors';
+import { navbarHeight } from '../../utils/sizes';
+import ToDoRow from '../../components/ToDoRow';
+import Table from '../../components/Table';
+import Layout from '../../components/Layout'
+import { Helmet } from "react-helmet";
+import { inject, observer } from 'mobx-react'
+
+@inject("toDoStore")
+@observer
+export default class Splash extends Component {
+
+    componentDidMount() {
+      this.props.toDoStore.findToDos()
+    }
+
+    render() {
+        const { toDos } = this.props.toDoStore;        
+        return (
+            <Layout showLogo={true}>
+              <Helmet>
+                <title>New Website</title>
+              </Helmet>
+              <Table
+              striped
+              headings={["Text", "Created At"]}
+              rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
+              />
+            </Layout>
+        )
+    }
+}
+
+```
+
+Save and run. You should see your table of ToDos for the logged in user! Woohoo! Go to localhost:3005/create and make a bunch of ToDos. Go back to the homepage. You should see them in the table, nice and striped!
+
+You should feel super proud of yourself. I know there's a ton of moving pieces right now and you certainly will not understand everything that goes on. Just know that it really doesn't get any more complicated than this. You've built an app that can create and fetch data with a logged in user. That is 90% of the work out there. Let's clean things up a little bit and push to production to show our friends.
 
