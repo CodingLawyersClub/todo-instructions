@@ -196,7 +196,8 @@ const ToDo = {
 
 - Export the ToDo so other files can know about its existence:
 
-```export default {
+```
+export default {
   Account,
   Auth,
   ToDo <-- Add it here!
