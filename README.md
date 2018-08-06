@@ -1000,5 +1000,5 @@ Press CMD+N to open up a new terminal. Navigate to `todo-server`. Again, push:
 ➜  todo-server git:(master) ✗ git push
 ```
 
-Great! All your code is uploaded. Because auto deploy is on, it's automatically deploying to your endpoint.
+Great! All your code is uploaded. Because auto deploy is on, it's automatically deploying to your endpoint. After a couple of minutes you can go to the public url you noted in `agent.js`. As a reminder, mine is https://barabander-todo-frontend.herokuapp.com/ so yours should look very similar.
 
