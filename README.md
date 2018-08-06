@@ -640,7 +640,6 @@ export default class Splash extends Component {
                   </Box>
                 </Flex>
                 <Table
-                isLoading={false}
                 striped
                 selectable                
                 headings={["Text", "Created At"]}
