@@ -8,7 +8,7 @@ The app is going to be stupid simple. It's only going to do two things:
 1. Allow a logged in user to create ToDos
 2. Allow a logged in user to fetch his/her ToDos
 
-That's it! I have already built it, so if you want to see what the final product looks like, you can check it out here: https://barabander-todo-frontend.herokuapp.com. Feel free to create an account and create some ToDos to try it out!
+That's it! I have already built it, so if you want to see what the final product looks like, you can check it out here: (https://barabander-todo-frontend.herokuapp.com). Feel free to create an account and create some ToDos to try it out!
 
 # Back End
 
@@ -1284,7 +1284,7 @@ First we have to set our buildpack in Heroku. It is not important what a buildpa
 We need to set one Config Var
 1. While on your frontend app, click "Settings"
 2. Under Config Vars, click "Reveal Config Vars"
-3. Add KEY: `NODE_ENV` VALUE: 'production'
+3. Add KEY: `NODE_ENV` VALUE: production
 
 ## Push to Github
 
