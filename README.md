@@ -14,15 +14,15 @@ That's it! I have already built it, so if you want to see what the final product
 
 ## Define the `ToDo` Model
 
-We're using MongoDB which is a really popular no-SQL database. To make things even simpler, we're using a library called `mongoose` that acts as a wrapper for MongoDB. One of the things we do we `mongoose` is define our models. Our models are how we want to represent the stuff we want to save to our database. Let's dive straight in.
+We're using MongoDB which is a really popular no-SQL database. To make things even simpler, we're using a library called `mongoose` that acts as a wrapper for MongoDB. One of the things we do with `mongoose` is define our models. Our models are how we want to represent the stuff we want to save to our database. Let's dive straight in.
 
-Inside of `todo-server` create a new file under `models` named `ToDo.js`. Once that's done, let's import monogoose:
+Inside of `todo-server` create a new file under `models` named `ToDo.js`. Once that's done, let's import `monogoose` on the top:
 
 ```
 const mongoose = require('mongoose');
 ```
 
-Great, now let's define our `schema`. A `schema` is the blueprint for what properties our model will contain. Define a schema as follows
+Great, now let's define our ToDo `schema`. A `schema` is the blueprint for what properties our model will contain. Define a schema as follows
 
 ```
 let ToDoSchema = new mongoose.Schema({
@@ -30,9 +30,9 @@ let ToDoSchema = new mongoose.Schema({
 }, {timestamps: true});
 ```
 
-We're creating a new `mongoose` schema named `ToDoSchema`. The `timestamps` but just gives us a lot of stuff around when it was created / updated for free. Just copy and paste it. We're almost always going to have that piece.
+We're creating a new `mongoose` schema named `ToDoSchema`. The `timestamps` piece just gives us a lot of free stuff around when it was created / updated. Just copy and paste it. We're almost always going to have that piece.
 
-Cool, that was easy. So our schema right now is pretty boring as we haven't defined anything yet. What kind of things would you say should go on a ToDo? Well, you'd want text that actually says what we need to do. So let's add that property:
+So our schema right now is pretty boring as we haven't defined anything yet. What kind of things would you say should go on a ToDo? Well, you'd want text that actually says what we need to do. So let's add that property:
 
 ```
 let ToDoSchema = new mongoose.Schema({
@@ -47,7 +47,7 @@ Woah, woah, there's a lot of stuff in there. Let's go through it.
 3. We want it `required`. We don't want the ability to create ToDo's without any text. This will make it impossible to do that.
 4. We want to `trim` it. This simply removes any whitespace the user may add.
 
-Cool, you've defined your first property! What else would our ToDo need? Maybe who's ToDo it is? Our app is going to have a lot of users and I don't want to be seeing your ToDos!. Let's add another property to our schema.
+Great, you've defined your first property! What else would our ToDo need? Maybe who's ToDo it is? Our app is going to have a lot of users and I don't want to be seeing your ToDos!. Let's add another property to our schema.
 
 ```
 let ToDoSchema = new mongoose.Schema({
@@ -57,7 +57,7 @@ let ToDoSchema = new mongoose.Schema({
 ```
 
 Great, let's walk through this property now.
-1. The type is an `ObjectId`. I already have a model named `User`. This may seem a little weird – why isn't the type User? Well, you don't put full models on other models. You put a reference to them, which is it's `ObjectId`. The `ObjectId` is a unique value for every `User`.
+1. The type is an `ObjectId`. I already have a model named `User`. This may seem a little weird – why isn't the type User? Well, you don't put full models on other models. You put a reference to them, which is its `ObjectId`. The `ObjectId` is a unique value for every `User`.
 2. We also want to `require` the reference to the user. We don't want you to be able to create a ToDo without referencing who created it.
 
 Great, that's looking good for now! Let's do one more thing to this file.
@@ -96,9 +96,9 @@ Great now our app knows about our ToDo!
 
 ## ToDo Routes
 
-Now we need to define an endpoint to work with our `todos`. Basically, an endpoint is a specific url we call to interact with our database, whether it be to pull or push data. Behind most websites you use there are endpoints that are fueling the data you see on your screen. As an example, you can check out the data feeding a website like CryptoKitties [here](https://api.cryptokitties.co/v2/kitties).
+Now we need to define an endpoint to work with our `todos`. Basically, an endpoint is a specific url we call to interact with our database, whether it be to pull or push data. Behind most websites you use there are endpoints that are fueling the data you see on your screen. As an example, go to the [CrytpoKitties website](https://www.cryptokitties.co/catalogue). Although it's nice and pretty, behind the scenes this website is calling an endpoint to get its data. You can see what the raw data looks like [here](https://api.cryptokitties.co/v2/kitties).
 
-To set up our routes, first let's create a new file named `todos.js` under `routes/api/`. Let's import what we're going to need, and walk through each one.
+To set up our routes, first let's create a new file named `todos.js` under `routes/api/`. Let's import what we're going to need on the top, and walk through each one.
 
 ```
 var mongoose = require('mongoose');
@@ -112,7 +112,7 @@ var auth = require('../auth');
 2. `router` this is how we create our routes
 3. `ToDo`, the model we just created
 4. `User`, a model I created in advance
-5. `auth`, a library that deals with state of a user, logged in or logged out.
+5. `auth`, a library that deals with the logged in state of the user
 
 At the bottom of the file, add the following:
 
@@ -120,7 +120,7 @@ At the bottom of the file, add the following:
 module.exports = router;
 ```
 
-This exports the `router` to the rest of our app. The `todos.js` should look like this:
+This exports the `router` to the rest of our app. The `todos.js` file should look like this:
 
 ```
 var mongoose = require('mongoose');
@@ -132,7 +132,7 @@ var auth = require('../auth');
 module.exports = router;
 ```
 
-Great! Now, let's add it to the rest of our app.
+Great! Now we need to register this rout with our server.
 
 Go to `routes/api/index.js`. Let's import our `/todos` route:
 
@@ -141,7 +141,7 @@ router.use('/', require('./users'));
 router.use('/todos', require('./todos')); <-- Add this!
 ```
 
-Great! Our app now knows our `todos` route. There's nothing there though! Let's change that.
+Great! Our app now knows our `todos` routes file. There's no routes in this routes file though! Let's change that.
 
 ## Build the Create ToDo Route
 
@@ -155,9 +155,9 @@ router.post('/', auth.required, async (req, res, next) => {
 
 OK, let's walk through this.
 1. We're defining a POST method by writing `router.post`. A POST method means that this method will be writing to the database, creating our ToDo
-2. `/` defines the route. Because we wrote `router.use('/todos', require('./todos'));` in our `api/index.js`, the route is actually `websitename/api/todos`.
+2. `/` defines the url of the route. Because we wrote `router.use('/todos', require('./todos'));` in our `api/index.js`, the route is actually `websitename/api/todos/`.
 3. `auth.required`. This is some magic that requires our users to be logged in when calling this endpoint. Do not worry about how this is working behind the scenes
-4. `async (req, res, next) =>` The `async` gives us the ability to use special syntax called `await`. We are almost always going to have it on our endpoints, so just default to including it. the `(req, res, next` and automatically passed. You'll see how we use them in a bit
+4. `async (req, res, next) =>` The `async` gives us the ability to use special syntax called `await`. We are almost always going to have it on our endpoints, so just default to including it. The `(req, res, next)` are automatically passed. You'll see how we use them in a bit
 
 Cool! So we have the skeleton of our endpoint. Let's start filling it in :).
 
@@ -172,11 +172,17 @@ try {
 
 ```
 
-Cool, now what the heck is this. Basically, we're going to "try" to execute code in the first `{ }`. If that fails at any point, the code inside of the `catch` is going to automatically be run.
+What the heck is this? Basically, we're going to "try" to execute code in the first `{ }`. If that fails at any point, we're going to "catch" the error and run the code inside of the second `{ }`.
 
-Let's put stuff in our `try`
+Let's put stuff in our `try`.
 
-First, this endpoint is creating ToDos from our app. The user is giong to pass up text. The user passes text through the request `body`. So, let's get what the user passed up:
+First, this endpoint is creating ToDos from our app. The user is going to pass up text. The user passes text through the request `body`. The user is going to pass up something into the `req.body` that looks like this:
+
+```
+{ text: 'This is the text of a ToDo!' }
+```
+
+That means we can get the text off the `req.body` like this:
 
 ```
 const todoFromRequest = req.body;  
@@ -184,7 +190,7 @@ const { text } = todoFromRequest;
 
 ```
 
-Cool, now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` and defining it as `text`.
+Cool, now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` (which looks like what we have above) and defining it as `text`.
 
 OK, now let's find our user who is making the request. We're going to need this user to save to our `ToDo`. The user's id is automatically sent up in the `payload`. We're then going to query our database by calling `findById` to find the exact user making the request. The `await` is some magic syntax that tells us to wait for that query to complete before moving on.
 
