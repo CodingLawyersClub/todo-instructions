@@ -169,7 +169,6 @@ try {
 } catch (e) {
 
 }
-
 ```
 
 What the heck is this? Basically, we're going to "try" to execute code in the first `{ }`. If that fails at any point, we're going to "catch" the error and run the code inside of the second `{ }`.
@@ -187,7 +186,6 @@ That means we can get the text off the `req.body` like this:
 ```
 const todoFromRequest = req.body;  
 const { text } = todoFromRequest;
-
 ```
 
 Now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` (which looks like what we have above) and defining it as `text`.
@@ -196,7 +194,6 @@ OK, now let's find our user who is making the request. We're going to need this 
 
 ```
 const user = await User.findById(req.payload.id);
-
 ```
 
 Great! Because we now have the `text` and the `user` we have everything we need to create our ToDo!. Let's make a new `ToDo` and pass in the `user` and `text`:
@@ -416,9 +413,10 @@ Now, it's time to set up our form to put our validation in. Copy the following c
 
 ```
 render () {
+    const initalText = { text: '' }
     return (
         <Formik 
-        initialValues={text: ''}
+        initialValues={initalText}
         validationSchema={FormSchema}
         render={({ errors, touched, onSubmit }) => (
         <Form>
@@ -438,7 +436,7 @@ render () {
 
 Let's walk through each piece:
 1. `<Formik />` is a form library component that takes care of a lot of magic for us
-2. `initialValues` is a proprety on `Formik` that defines what the initial data of the form will be. We want to set our text to be blank, so we will pass in an object `{text: ''}`. We wrap it in `{ }` because we wrap passed in `props` with `{ }`
+2. `initialValues` is a proprety on `Formik` that defines what the initial data of the form will be. We want to set our text to be blank, so we will pass in an object `initialText` which we defined before the `return statement`. We wrap it in `{ }` because we wrap passed in `props` with `{ }`
 3. `validationSchema` is a property on `Formik` that takes in any validation schema we've defined. We made our `FormSchema` to prevent blank text, and this is where we pass that in
 4. `render={({ errors, touched, onSubmit }) =>` This is automatically called and where we put our HTML. Don't worry too much about the parameters `errors, touched, onSubmit`
 5. `<Form />` is a component that I made that handles a lot of Form styling for us
@@ -1180,13 +1178,14 @@ Your `render()` should look like this now:
 ```
 render () {
     const { isCreatingToDo } = this.props.toDoStore;
-
+    const initalText = { text: '' };
+    
     return (
         <Formik
         onSubmit={formValues => {
             this.create(formValues)
         }}
-        initialValues={{text: ''}}
+        initialValues={initalText}
         validationSchema={FormSchema}
         render={({ errors, touched, onSubmit }) => (
         <Form loading={isCreatingToDo}>
@@ -1221,6 +1220,9 @@ import Heading from '../../components/Heading';
 And your new components should be put in like this:
 
 ```
+const { isCreatingToDo } = this.props.toDoStore;
+const initalText = { text: '' };
+
 return (
     <Layout>
         <Container>
@@ -1229,7 +1231,7 @@ return (
             onSubmit={formValues => {
                 this.create(formValues)
             }}
-            initialValues={{text: ''}}
+            initialValues={initalText}
             validationSchema={FormSchema}
             render={({ errors, touched, onSubmit }) => (
             <Form loading={isCreatingToDo}>
