@@ -1,4 +1,4 @@
-# Set Up Our Endpoints
+# Back End
 
 ## Define the `ToDo` Model
 
@@ -133,8 +133,124 @@ Great! Our app now knows our `todos` route. There's nothing there though! Let's 
 
 ## Build the Create ToDo Route
 
+OK, let's create our first route. In `api/todos` Below the imports and above the export, put the following:
 
-# Display The Create Page
+```
+router.post('/', auth.required, async (req, res, next) => {
+
+});
+```
+
+OK, let's walk through this.
+1. We're defining a POST method by writing `router.post`. A POST method means that this method will be writing to the database, creating our ToDo
+2. `/` defines the route. Because we wrote `router.use('/todos', require('./todos'));` in our `api/index.js`, the route is actually `websitename/api/todos`.
+3. `auth.required`. This is some magic that requires our users to be logged in when calling this endpoint. Do not worry about how this is working behind the scenes
+4. `async (req, res, next) =>` The `async` gives us the ability to use special syntax called `await`. We are almost always going to have it on our endpoints, so just default to including it. the `(req, res, next` and automatically passed. You'll see how we use them in a bit
+
+Cool! So we have the skeleton of our endpoint. Let's start filling it in :).
+
+First let's put in something called a `try...catch`. These are really useful for error handling. Add the following code inside of the method:
+
+```
+try { 
+
+} catch (e) {
+
+}
+
+```
+
+Cool, now what the heck is this. Basically, we're going to "try" to execute code in the first `{ }`. If that fails at any point, the code inside of the `catch` is going to automatically be run.
+
+Let's put stuff in our `try`
+
+First, this endpoint is creating ToDos from our app. The user is giong to pass up text. The user passes text through the request `body`. So, let's get what the user passed up:
+
+```
+const todoFromRequest = req.body;  
+const { text } = todoFromRequest;
+
+```
+
+Cool, now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` and defining it as `text`.
+
+OK, now let's find our user who is making the request. We're going to need this user to save to our `ToDo`. The user's id is automatically sent up in the `payload`. We're then going to query our database by calling `findById` to find the exact user making the request. The `await` is some magic syntax that tells us to wait for that query to complete before moving on.
+
+```
+const user = await User.findById(req.payload.id);
+
+```
+
+Great! Because we now have the `text` and the `user` we have everything we need to create our ToDo!. Let's make a new `ToDo` and pass in the `user` and `text`:
+
+```
+const toDo = new ToDo({user, text});
+```
+
+Let's then save it to our database by calling `save()`:
+
+```
+const savedToDo = await toDo.save();
+```
+
+Wow, you're now saving ToDo's to our database! Now, I don't want to return all of the data of our `ToDo`, just what the frontend actually needs. Lets go back to our model at `ToDo.js` and define a method to structure our `ToDo` to return.
+
+In `ToDo.js` write the following method:
+
+```
+ToDoSchema.methods.toJSON = function(){
+    return {
+        id: this.id,
+        text: this.text
+    }
+}
+```
+
+This looks scary but it's actually really simple. Let's walk through it.
+
+1. We're defining a method on the ToDoSchema named `toJSON`
+2. The `function()` is just saying this is a method
+3. We are returning the `id` of the todo `this.id` and the text `this.text`
+
+Now, if we call this method, we're only going to return the `id` and the `text` of the `ToDo`. We try and minimize what we share with the frontend whenever possible.
+
+Cool, back in `todos`, let's return our `savedToDo` and call our new `toJSON` method:
+
+```
+return res.json({toDo: savedToDo.toJSON()})
+```
+
+Amazing, now let's add some error handling.
+
+Inside of the `catch {..}` let's add the following:
+
+```
+console.error(e);
+next(e);
+```
+
+`console.error(e)` is going to log errors for us that occur so we can see what went wrong
+Do not worry about what `next(e)` is. Just include it.
+
+Fantastic! We are completely done with this create endpoint! It should look like this:
+
+```
+router.post('/', auth.required, async (req, res, next) => {
+    try {
+        const todoFromRequest = req.body;        
+        const { text } = todoFromRequest;
+        const user = await User.findById(req.payload.id);
+        const toDo = new ToDo({user, text});
+        const savedToDo = await toDo.save();
+        return res.json({toDo: savedToDo.toJSON()})
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
+});
+```
+
+# Front End
 
 ## Create Page Structure
 
