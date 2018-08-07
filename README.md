@@ -437,7 +437,7 @@ render () {
 ```
 
 Let's walk through each piece:
-1. `<Formik />` is a form library that takes care of a lot of magic for us
+1. `<Formik />` is a form library component that takes care of a lot of magic for us
 2. `initialValues` is a proprety on `Formik` that defines what the initial data of the form will be. We want to set our text to be blank, so we will pass in an object `{text: ''}`. We wrap it in `{ }` because we wrap passed in `props` with `{ }`
 3. `validationSchema` is a property on `Formik` that takes in any validation schema we've defined. We made our `FormSchema` to prevent blank text, and this is where we pass that in
 4. `render={({ errors, touched, onSubmit }) =>` This is automatically called and where we put our HTML. Don't worry too much about the parameters `errors, touched, onSubmit`
@@ -454,7 +454,9 @@ Save the file and watch the page reload. You just set up your first form! Try cl
 ## Link Up With MobX and Hit the Internet
 
 Now that we have our form good to go, we need something to happen when you click Create. We use MobX to initiate our network requests and load data. So let's get started creating what we call a MobX store.
+
 Go to `src/stores/` and create a new file called `toDoStore.js`
+
 At the top of `toDoStore.js` import the following:
 
 ```
@@ -495,13 +497,13 @@ export default new ToDoStore();
 
 Go to `src/index.js`. We're now going to add this store we created to our app.
 
-First, import it on line 13:
+First, import after the `userStore` import:
 
 ```
 import toDoStore from './stores/toDoStore';
 ```
 
-Then add it to the list of stores on line 23:
+Then add it to the list of stores:
 
 ```
 const stores = {
@@ -526,7 +528,7 @@ const ToDo = {
 };
 ```
 
-Let's add a method called `create`. This method is going to create a new To-Do in our database by calling an endpoint /toods. We use the `.post` method when we want to create something. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
+Let's add a method called `create`. This method is going to create a new To-Do in our database by calling the endpoint we defined in our backend `/toods`. We use the `.post` method because we want to hit the `.post` endpoint. We'll be passing in the data, the `toDo` from the form directly. We'll see how that works in a bit.
 
 ```
 const ToDo = {
@@ -560,11 +562,12 @@ createToDo = flow(function* () {
 There's a lot of fancy code going on there. There's only two things I want you to understand.
 1. This is an action. The `@action` gives this function special properties. When you're taking an action (hitting the internet, for example) be on the safe side and define it as an `action`
 2. The `flow` we use because we're making a network request. Always include this when hitting the internet.
+
 That's all you need to know for now.
 
 Let's fill this function!
 
-Inside of `createToDo` let's pass in the toDo. This is the text from our input before. Let's also call that `create` method we put in `agent` on the `ToDo` object. The `yield` says that we're making a network request, and do not move on to running the next line until the result comes back, which we're defining as `response`. We're going to `console.log` the result, which will print it out for us to see in the browser. It will look like this:
+Inside of `createToDo` let's pass in the toDo. This is the text from our input before. Let's also call that `create` method we put in `agent` on the `ToDo` object. The `yield` says that we're making a network request, and do not move on to running the next line until the result comes back, which we're defining as `response`. It's the equivalent of `await` in our backend file if you remember. We're going to `console.log` the result, which will print it out for us to see in the browser. It will look like this:
 
 ```
 @action
@@ -599,9 +602,9 @@ onSubmit={formValues => {
 }}
 ```
 
-This means that when the Create button is clicked, our form is automatically going to call this `onSubmit`. It is passing the values from the form (the text of our toDo) and then calling a method that does not exist yet called `createToDo`. Let's define that method now.
+This means that when the Create button is clicked, our form is automatically going to call this `onSubmit` method. It is passing the values from the form (the text of our toDo) and then calling a method that does not exist yet called `createToDo`. Let's define that method now.
 
-On line 41, add a `createToDo` method:
+Below the `render` method add a new method named `createToDo` that looks like this:
 
 ```
 create(formValues) {
@@ -609,7 +612,7 @@ create(formValues) {
 }
 ```
 
-On every React component there is a magical property called, well, `props`. We're going to call our `createToDo` method by accessing the `props` on this Create Page. Pass in the formValues because this is what contains the `text` of our To-Do:
+On every React component there is a magical property called, well, `props`. We're going to call our `createToDo` method by accessing the `props` on this Create Page. Pass in the `formValues` because this is what contains the `text` of our To-Do:
 
 ```
 create(formValues) {
@@ -617,7 +620,7 @@ create(formValues) {
 }
 ```
 
-Believe it or not, you're all synced up on the front end to create To-Dos. Let the page reload, add some text to the input, and click Create. Open up your console by right clicking --> Inspect --> Console. You should see the log you wrote before with some data. That is your To-Do returned from the server :)
+Believe it or not, you're all synced up on the front end to create To-Dos. Let the page reload, add some text to the input, and click the create button. Open up your console by right clicking --> Inspect --> Console. You should see the log you wrote before with some data. That is your To-Do returned from the server :)
 
 # Displaying the To-Dos for a User
 
@@ -625,7 +628,7 @@ Now that we've created our To-Do, let's display them for a particular user!
 
 ## Write the `find()` Method
 
-First, we need to go to our `agent.js` file to write the method to call our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I did this.
+First, we need to go to our `agent.js` file to write the method to call a GET request to our `/todos` endpoint. Let's do that now. On `agent.js` go to `ToDo` and copy and paste what we have under `create`. We're going to modify it slightly to be our `find` function. Check out the arrows for how I did this.
 
 ```
 create: (toDo) => <-- rename to `find` and get rid of the to `toDo` parameter. The endpoint we built doesn't need any parameters besides the user, which is automatically sent up for us. That means we don't need to pass antyhing.
@@ -639,7 +642,7 @@ find: () =>
   requests.get('/todos')
 ```
 
-Great! Now we have all we need in our `agent` file. Let's go to our MobX store to call it!
+Great! Now we have all we need in our `agent` file and should have a `create` and `find` method under `ToDo`. Let's go to our MobX store to call it!
 
 ## Write the `findToDos()` Method
 
@@ -663,7 +666,7 @@ findToDos = flow(function* () {
 });
 ```
 
-## Call `findToDos()` from `componentDidMount`
+## Call `findToDos()` from `componentDidMount()`
 
 Now, we need to call this `findToDos` from somewhere. Let's set that up!
 
@@ -675,19 +678,19 @@ componentDidMount() {
 }
 ```
 
-`componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3005), this method will be called. Let's fetch our To-Dos in here!
+`componentDidMount` is a super important React lifecycle method. Basically, whenever you do the `extends Copmonent` the file automatically gets React lifecycle methods like `componentDidMount`. Whenever the page loads, `componentDidMount` is called and the code inside of it is run. This means that it's an excellent place to make network requests because when we navigate to home (localhost:3005), this method will be called. Let's fetch our ToDos in here!
 
 Like before, we need to import our `toDoStore` into our page. We do that the same way as the `Create` page.
 
 ```
 import { inject, observer } from 'mobx-react' <-- Import this on top
 ...
-@inject("toDoStore")
-@observer
+@inject("toDoStore") <-- Add this
+@observer <-- Add this. Everything must be touching exactly how you see here
 export default class Home extends Component {
 ```
 
-Great! Now we have access to our `findToDos` via `props`. Let's call it like before:
+Great! Now we have access to our `findToDos` via `props.toDoStore`. Let's call it like before:
 
 ```
 componentDidMount() {
@@ -695,7 +698,7 @@ componentDidMount() {
 }
 ```
 
-That's it. Now save, and reload the page. Open up the chrome inspector and go to console. You should see your `OUR FOUND TODOS` logged. Everything is working. Now we need to display our To-Dos!
+That's it. Now save, and reload the page. Open up the chrome inspector and go to the console. You should see your `OUR FOUND TODOS` logged. Everything is working. Now we need to display our To-Dos!
 
 # Displaying our To-Dos
 
@@ -712,7 +715,15 @@ class ToDoStore {
 ...
 ````
 
-`@observable` is some MobX magic that says: "Look at this variable, `toDos` and when it changes, I want you to automatically redraw my page with the new values inside." I like to think of it as a flag that I know my components are watching to see if they change. The blank array we set because we currently don't have any ToDos, so our list is currently blank!
+`@observable` is some MobX magic that says: "Look at this variable, `toDos` and when it changes, I want you to automatically redraw my page with the new values inside." I like to think of it as a flag that I know my components are watching to see if they change. 
+
+We use the `[ ]`, known as an array, to store a list of data. Eventually you can imagine our ToDos will look something like this:
+
+```
+toDos = [ {text: "First ToDo"}, {text: "Another ToDo}, {text: "I really think they're getting the idea ToDo"} ]
+```
+
+The blank array we set because we currently don't have any ToDos, so our list is currently blank! We're going to fill it in with what we get back from our network request.
 
 Now, go to the `findToDos` method, remove the `console.log` and and add the following:
 
@@ -734,7 +745,7 @@ Create a new file under components named `ToDoRow.js`. Like all React components
 ```
 import React, { Component } from 'react';
 
-export default class TableCell extends Component {
+export default class ToDoRow extends Component {
       
   render() {
   
@@ -751,19 +762,18 @@ import { Table } from 'semantic-ui-react';
 import dates from '../utils/dates';
 ```
 
-`semantic-ui-react` is an amazing library that gives us a ton of UI for free. It is going to do most of the heavy lifting to make our table row look nice
-
-`dates` is a library I made that is a wrapper for an amazing library named `moment.js`. Don't worry too much about this one.
+1. `semantic-ui-react` is an amazing library that gives us a ton of UI for free. It is going to do most of the heavy lifting to make our table row look nice
+2. `dates` is a library I made that is a wrapper for an amazing library named `moment.js`. Don't worry too much about this one.
 
 Great, now let's create our table row.
 
-Each row is going to be passed a specific `toDo` to display via the `props`. I wasn't kidding when I told you props are magic! Let's get them off of props.
+Each row is going to be passed a specific `toDo` to display via the `props`. I wasn't kidding when I told you props are magic! Let's get the `toDo` off of the props in this class.
 
 ```
  const { toDo } = this.props;
 ```
 
-This is a useful short hand you'll see a lot. It is identical to doing the following:
+This is a useful short hand you saw earlier in our server code. To reiterate, it is identical to doing the following:
 
 ```
 const toDo = this.props.toDo
@@ -782,7 +792,13 @@ return (
 )
 ```
 
-There's a lot going on here, so let's walk through it. First, were wrapping everything in a `Table.Row` because that is what this component is supposed to return. Inside of our `Row` we have two cells. One cell we want to display the ToDo's text, and the other we want to display the date it was created. In React, we display text to the page with those `{ }` brackets. The first cell is displaying the `text` off the ToDo, the second is displaying the `createdAt` date with some formatting from my date library. The whole component should look like this:
+There's a lot going on here, so let's walk through it. 
+
+1. We're wrapping everything in a `Table.Row` because that is what this component is supposed to return. 
+2. Inside of our `Row` we have two cells. One cell we want to display the ToDo's text, and the other we want to display the date it was created. 
+3. In React, we display text to the page with those `{ }` brackets. The first cell is displaying the `text` off the ToDo, the second is displaying the `createdAt` date with some formatting from my date library. 
+
+The whole component should look like this:
 
 ```
 import React, { Component } from 'react';
@@ -803,7 +819,7 @@ export default class TableCell extends Component {
 }
 ```
 
-Boom, you've created a component! Let's import it and put it to use!
+Boom, you've created our `ToDoRow` component! Let's import it and put it to use!
 
 
 Go to `Home/index.js` and import two things:
@@ -816,7 +832,7 @@ import Table from '../../components/Table';
 
 This simply imports a `Table` component I've created along with the `ToDoRow` we just made.
 
-First, lets get our ToDos from the `toDoStore`. This is incredibly simple because they live on our props now. The `@observer` on this component (above the class) tells this component to listen to any `@observables` we defined in our `toDoStore`. Do you remember what we defined as an `@observable`? Our `toDos`! Everytime the `toDos` array changes (like when a network request finishes and fetches data) this component, `Home/index.js` will redraw and pass in the `toDos` in the props. Which means we can do this now:
+First, lets get our ToDos from the `toDoStore`. This is incredibly simple because they live on our props now. The `@observer` on this component (above the class) tells this component to listen to any `@observable`s we defined in our `toDoStore`. Do you remember what we defined as an `@observable`? Our `toDos`! Everytime the `toDos` array changes (like when our network request finishes and fetches data and sets it to be `toDos`), `Home/index.js` will redraw and pass in the `toDos` in the props. Which means we can do this now:
 
 ```
 ...
@@ -827,9 +843,7 @@ render() {
 
 This simply gets the `toDoStore` and pulls off the `toDos` array we defined earlier. MobX will take care of automatically redrawing everything for us :)
 
-Now
-
-Delete the `<div>` that says `Welcome to your new website!` and replace it with the following:
+Now, delete the `<div>` that says `Welcome to your new website!` and replace it with the following:
 
 ```
 <Table
@@ -839,9 +853,11 @@ rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
 />
 ```
 
-`striped` is some magic that gives us auto striping. Don't worry about this too much.
-`headings` is the headings on our table. They need to be in the same order as our cells we defined on `ToDoRow`. So, the first one is `Text` and the second is `Created At`.
-`rows` is the star of the show. It takes in an array of our `ToDoRow`. We `map` over each `toDo` in our `toDos` array, and pass it to the `ToDoRow` to draw. The `key` is just a unique property that react requires whenever we do a `map`. It's ok if this doesn't make complete sense yet, you're going to be seeing `map` a ton and I promise it will become clear.
+1. `striped` is some magic that gives us auto striping. Don't worry about this too much.
+2. `headings` is the headings on our table. They need to be in the same order as our cells we defined on `ToDoRow`. So, the first one is `Text` and the second is `Created At`.
+3. `rows` is the star of the show. It takes in an array of our `ToDoRow` component. We `map` over each `toDo` in our `toDos` array, and pass it to the `ToDoRow` to draw. The `key` is just a unique property that react requires whenever we do a `map`. 
+
+It's ok if this doesn't make complete sense yet, you're going to be seeing `map` a ton and I promise it will become clear.
 
 The whole `Home/index.js` should look like this:
 
@@ -882,13 +898,13 @@ export default class Splash extends Component {
 
 Save and run. You should see your table of ToDos for the logged in user! Woohoo! Go to localhost:3005/create and make a bunch of ToDos. Go back to the homepage. You should see them in the table, nice and striped!
 
-You should feel super proud of yourself. I know there's a ton of moving pieces right now and you certainly will not understand everything that goes on. Just know that it really doesn't get any more complicated than this. You've built an app that can create and fetch data with a logged in user. That is 90% of the work out there. Let's clean things up a little bit and push to production to show our friends.
+You should feel super proud of yourself. I know there's a ton of moving pieces right now and you certainly will not understand most that is going on. Just know that it really doesn't get any more complicated than this. You've built an app that can create and fetch data with a logged in user. That is 90% of apps out there. Let's clean things up a little bit and push to production to show our friends.
 
 # Clean Up
 
 Right now we have everything working but our app kind of sucks. Let's clean it up to be much more production friendly to share with our friends.
 
-## Create a Logged Out State On ToDo list page
+## Create a Logged Out State On ToDo List Page
 
 We have made it so users can only see their own ToDos. The problem is, if you're not logged in, you won't see anything and our request via `findToDos()` will fail. Let's have a logged out state.
 
@@ -912,7 +928,7 @@ componentDidMount() {
 
 See what's going on here? We find the property called `currentUser` on the `userStore`. If there is a value there, we know the user is logged in, and we make the request. If not, well, the block of code `this.props.toDoStore.findToDos()` is never run! Perfect!
 
-Let's change the UI to conditional display. We're going to user a neat little trick. Look at the following block of code:
+Let's change the UI to conditionally display based on whether we have a logged in user or not. We're going to user a neat little trick. Look at the following block of code:
 
 ```
 {true && <div>I will display!</div>}
@@ -990,10 +1006,10 @@ import { Button } from 'semantic-ui-react';
 import Container from '../../components/Container';
 ```
 
-`Heading` we use for the title of the page. It's just big text.
-`Box` and `Flex` we use for layouting purposes. You'll see this in action soon
-`Button` is from our amazing `semantic-ui-react` library and gives us a really nice button for free
-`Container` is a wrapper component that gives some padding
+1. `Heading` we use for the title of the page. It's just big text.
+2. `Box` and `Flex` we use for layouting purposes. You'll see this in action soon
+3. `Button` is from our amazing `semantic-ui-react` library and gives us a really nice button for free
+4. `Container` is a wrapper component that gives some padding
 
 First, everything feels very cramped. We have a component that adds padding named `Container`. Let's wrap our `<Table />` inside of a `Container`. Let's also put inside of this container a `<Header />` above our `<Table />` to clearly display what this page is. Finally, let's rename the `<title />`, which is what you see on the tab, to "ToDo List". It should look like this:
 
@@ -1032,11 +1048,11 @@ Between `<Heading />` and `<Table />` add the following:
 ```
 
 Let's walk through each piece:
-`Flex` is a layout component. It helps with aligning things on the page. `justifyContent` means which way to align items. `flex-end` means to push everything to the right. So all this is saying is, everything inside of `<Flex />` I want to align right.
-`Box` is what goes inside of `Flex`. Think of `Flex` and `Box` as peanut-butter and jelly. They always go together. `Flex` says how to align the `Box`. Because our `Flex` is `flex-end`, it is our `Box` that is going to be pushed all the way to the right.
-`Button` is pretty self explanatory. This `Button` lives inside of my `Box` which is being pushed all the way to the right. `content` is what the button will say. `icon` is if we want it to have an icon. A list of icons can be found online, but don't worry about that for now. `labelPosition` says where you want the button to go, which I want it on the right of my "New" text.
- `onClick` is one of the most important methods. It does what you'd think it does. When this button is clicked, whatever is inside of that arrow is going to be called
- `this.props.history.push` is how we navigate to pages. the `/create` page is where we want to go. Don't worry too much about what's going on here. Just remember, if you want to go to a different page we created, you use `this.props.history.push("/PAGE_ROUTE_HERE")`. We defined our page route in `src/routes/index.js` if you forget the route name.
+1. `Flex` is a layout component. It helps with aligning things on the page. `justifyContent` says which way to align items. `flex-end` means to push everything to the right. So all this is saying is, everything inside of `<Flex />` I want to align right.
+2. `Box` is what goes inside of `Flex`. Think of `Flex` and `Box` as peanut-butter and jelly. They often  go together. `Flex` says how to align the `Box`. Because our `Flex` is `flex-end`, our `Box`  is going to be pushed all the way to the right.
+3. `Button` is pretty self explanatory. This `Button` lives inside of my `Box` which is being pushed all the way to the right. `content` is what the button will say. `icon` is if we want it to have an icon. A list of icons can be found online, but don't worry about that for now. `labelPosition` says where you want the button to go, which I want it on the "right" of my "New" text.
+4. `onClick` is one of the most important methods. It does what you'd think it does. When this button is clicked, whatever is inside of that arrow is going to be called
+5. `this.props.history.push` is how we navigate to pages. the `/create` page is where we want to go. Don't worry too much about what's going on here. Just remember, if you want to go to a different page we created, you use `this.props.history.push("/PAGE_ROUTE_HERE")`. We defined our page route in `src/routes/index.js` if you forget the route name.
 
 Your page should look like this:
 
@@ -1118,19 +1134,20 @@ findToDos = flow(function* () {
     this.isFetchingToDos = false;
 });
 ```
+
 As you can see, we simply set the variable to `true` right before fetching. After the fetch as completed (after the `yield`, we set them back to `false`. Think of it like turning a light switch on to look for something in a room, and when you've found it, turning the light switch back off.
 
 Now, let's use them on our component. Go back to `Home/index.js`
 
-Where we pull off the `toDos` now we're also going to pull off one of our new variables, isFetchingToDos:
+Where we pull off the `toDos` now we're also going to pull off one of our new variables, `isFetchingToDos`:
 
 ```
 const { toDos, isFetchingToDos } = this.props.toDoStore;                
 ```
 
-Great, now we have our loading variable. Like with our `toDos` `@observable`, our page will automatically watch the `isFetchingToDos` variable.
+Great, now we have our loading variable. Like with our `toDos` `@observable`, our page will automatically watch the `isFetchingToDos` variable and reload when it changes. In our case it's going to change when it's set from `false` to `true`.
 
-`<Table />` has some magic that will show a spinner when `isLoading` is set to `true` and hide the spinner when `isLoading` is set to `false`. `<Table />` should now look like this:
+`<Table />` has some magic that will show a spinner when `isLoading` is set to `true` and hide the spinner when `isLoading` is set to `false`. Let's put that to use by passing `isFetchingToDos` into `isLoading`. `<Table />` should now look like this:
 
 ```
 <Table
@@ -1142,7 +1159,7 @@ rows={toDos.map((toDo) => <ToDoRow key={toDo.id} toDo={toDo} />)}
 />
 ```
 
-Let the page reload. You should see a flash of a spinner now. It's extremely fast because the network request is straight to the server running on our computer. In production, it will prove very useful.
+Let the page reload. You should see a flash of a spinner now. It's extremely fast because the network request is straight to the server running on our computer. In production, network requests will take much longer and the spinner will be essential.
 
 Go to the Create page. Let's do the same dance.
 
@@ -1165,13 +1182,13 @@ render () {
     const { isCreatingToDo } = this.props.toDoStore;
 
     return (
-        <Formik // A form library that takes care of a lot of magic for us
+        <Formik
         onSubmit={formValues => {
             this.create(formValues)
         }}
-        initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
-        validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
-        render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+        initialValues={{text: ''}}
+        validationSchema={FormSchema}
+        render={({ errors, touched, onSubmit }) => (
         <Form loading={isCreatingToDo}>
             <Box>
                 <Box p={10}>
@@ -1208,13 +1225,13 @@ return (
     <Layout>
         <Container>
             <Heading>Create a To-Do!</Heading>
-            <Formik // A form library that takes care of a lot of magic for us
+            <Formik
             onSubmit={formValues => {
                 this.create(formValues)
             }}
-            initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
-            validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
-            render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+            initialValues={{text: ''}}
+            validationSchema={FormSchema}
+            render={({ errors, touched, onSubmit }) => (
             <Form loading={isCreatingToDo}>
                 <Box>
                     <Box p={10}>
@@ -1236,13 +1253,13 @@ Cool, on reload the Create page should have the navigation bar now and look much
 
 Ok, so now we just need to do something when the ToDo is successfully created. I like bringing back to the ToDo list. Let's do that.
 
-Go to the `create` method. Add `async` before it. This means that the method is `asynchronous` (99% of the time, it means it's making a network request, which this is doing). Let's add that
+Go to the `create` method. Add `async` before it. This means that the method is asynchronous. We did this on our backend endpoints if you remember. 99% of the time `async`, it means this method is making a network request, which this is doing. Let's add that
 
 ```
 async create(formValues) {
 ```
 
-When you add the `async`, you can now use something called `await`. Don't get caught up on what this is. Just know you use it on the line you do your network requests. In this case, that's calling our `createToDo` from our `toDoStore`
+When you add the `async`, you can now use something called `await`. Don't get caught up on what this is. Just know you use it on the line you do your network requests. In this case, that's calling our `createToDo` we defined from our `toDoStore`
 
 ```
 await this.props.toDoStore.createToDo(formValues);
@@ -1276,7 +1293,7 @@ Right now we're running our database on our computer. This is great for local de
 2. Go to your backend To-Do app. It should look something like "Your_Last_Name-todo-backend".
 3. Go to the "Resources" tab.
 4. There should be a search field under "Add-ons." Search for "mLab MongoDB" and select it
-5. A modal will pop up for the sandbox plan. Don't touch anything. Just click "Provision"
+5. A modal will pop up for the sandbox plan. Leave it as is and click "Provision"
 
 That's it. Your database is configured.
 
@@ -1288,7 +1305,7 @@ We need to set config variables for production. These exist on the server and sh
 2. Under Config Vars, click "Reveal Config Vars"
 3. You should see a `MONGO_URI` that was automatically created for you. Let's add some more.
 4. Add  KEY: `SECRET` VALUE: Pick a random string here https://www.random.org/strings/?num=20&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new
-5. Add KEY: `DOMAIN` VALUE: Open a new tab. Go back to heroku.com but this time select the frontend-todo. Go to Settings and scroll down to Domain. Copy the domain. Mine, for example, is https://barabander-todo-frontend.herokuapp.com
+5. Add KEY: `DOMAIN` VALUE: Open a new tab. Go back to heroku.com but this time select the frontend-todo. Go to Settings and scroll down to Domain. Copy the domain of your website. Mine, for example, is https://barabander-todo-frontend.herokuapp.com
 
  
 
@@ -1316,4 +1333,6 @@ Our app may not be a work of art but let's share it with our friends.
 Go to Github Desktop. On the top left, select the current respository as `todo`. You can see all the changes we've made from when this file was last committed (or saved to a specific version). We want all these changes so you can leave everything. If you didn't want specific changes you would uncheck. We'll do this another time. For summary, put, "V1" or something else that  captures the current state of our app. Then press commit. The top right should now give you an option to "push" the branch. Pushing saves to Github and automatically deploys our app to Heroku. Push the app. Do the exact same process for the `todo-backend` by selecting it from the dropdown in the top left and following the same instructions.
 
 Great! All your code is uploaded. Because auto deploy is on, it's automatically deploying to your endpoint. After a couple of minutes you can go to the public url you noted in `agent.js`. As a reminder, mine is https://barabander-todo-frontend.herokuapp.com/ so yours should look very similar.
+
+# 🎉🎉🎉 Congrats, you have just built your first full-fledged production grade React App! 🎉🎉🎉
 
