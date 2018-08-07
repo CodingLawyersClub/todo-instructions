@@ -250,6 +250,48 @@ router.post('/', auth.required, async (req, res, next) => {
 });
 ```
 
+## Build the Find ToDos Route
+
+So we can create ToDos. But as a logged in user, I want to be able to the ToDos I've created! Let's make another route:
+
+```
+router.get('/', auth.required, async (req, res, next) => {
+
+});
+```
+
+This route should look largely the same except for one huge difference. It's a `.get` instead of a `.post`. See, we are now GETting data, not POSTing, so we need to update that endpoint to reflect that. Now when we call `GET` `/todos`, we're going to hit this endpoint.
+
+So let's start filling it in. Add a `try...catch` like before. Fill in the `catch` block in exactly the same way
+
+```
+router.get('/', auth.required, async (req, res, next) => {
+    try {
+
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
+});
+```
+
+Great, now let's actually set up our query in the `try` block. Add the following:
+
+```
+const user = await User.findById(req.payload.id);
+const toDos = await ToDo.find({user}).sort({ createdAt: 'descending' });;
+return res.json({toDos: toDos.map((toDo) => toDo.toJSON(toDo))});
+```
+
+Let's walk through it.
+
+1. We find the user from the request again. This is the exact same thing we did in the creation endpoint. We'll need the user because we only want to return ToDos for the user making the request. I wouldn't want you to be able to see my ToDos!.
+2. We make a new query with `ToDo.find`. The first thing we do is pass in parameters. The `find({user})` says, listen, I don't want all ToDos, I just want the ToDos where the `user` property is the exact `user` that is making this request.
+3. We sort them by when they were created with `.sort`. It `descending` so the newest will be first in the list, oldest will be last
+4. We return our ToDos with `return res.json`. You can see we `map` over them first. This basically says, take the list of `toDos` you found, go over every single one, and call our `toJSON` method. This makes it so we're only returning what we want to return.
+
+Great! You now have the ENTIRE backend set up. Give yourself a pat on the back. Let's go and call these endpoints from the front end!
+
 # Front End
 
 ## Create Page Structure
