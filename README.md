@@ -1,3 +1,15 @@
+# What We're Building
+
+We're going to build a ToDo app! I know it's not the most exciting thing in the world, but it's basically a rite of passage to build at least one ToDo app. The cool thing about the app we're going to build is that even such a small app covers 90% of what all apps contain.
+
+It's going to be built on something called a MERN stack. MERN stands for Mongo + Express + React + Node.
+
+The app is going to be stupid simple. It's only going to do two things:
+1. Allow a logged in user to create ToDos
+2. Allow a logged in user to fetch his/her ToDos
+
+That's it! I have already built it, so if you want to see what the final product looks like, you can check it out here: https://barabander-todo-frontend.herokuapp.com. Feel free to create an account and create some ToDos to try it out!
+
 # Back End
 
 ## Define the `ToDo` Model
