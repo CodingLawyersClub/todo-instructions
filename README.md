@@ -1334,5 +1334,4 @@ Go to Github Desktop. On the top left, select the current respository as `todo`.
 
 Great! All your code is uploaded. Because auto deploy is on, it's automatically deploying to your endpoint. After a couple of minutes you can go to the public url you noted in `agent.js`. As a reminder, mine is https://barabander-todo-frontend.herokuapp.com/ so yours should look very similar.
 
-# 🎉🎉🎉 Congrats, you have just built your first full-fledged production grade React App! 🎉🎉🎉
-
+# 🎉🎉🎉 Congrats, you have just built and deployed your first full-fledged MERN App! 🎉🎉🎉
