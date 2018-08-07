@@ -190,7 +190,7 @@ const { text } = todoFromRequest;
 
 ```
 
-Cool, now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` (which looks like what we have above) and defining it as `text`.
+Now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` (which looks like what we have above) and defining it as `text`.
 
 OK, now let's find our user who is making the request. We're going to need this user to save to our `ToDo`. The user's id is automatically sent up in the `payload`. We're then going to query our database by calling `findById` to find the exact user making the request. The `await` is some magic syntax that tells us to wait for that query to complete before moving on.
 
@@ -228,9 +228,9 @@ This looks scary but it's actually really simple. Let's walk through it.
 
 1. We're defining a method on the ToDoSchema named `toJSON`
 2. The `function()` is just saying this is a method
-3. We are returning the `id` of the todo `this.id` and the text `this.text`
+3. We are returning the `id` of the todo with `this.id` and the text with `this.text`
 
-Now, if we call this method, we're only going to return the `id` and the `text` of the `ToDo`. We try and minimize what we share with the frontend whenever possible.
+Now, if we call this method, we're only going to return the `id` and the `text` of the `ToDo`. We try and minimize what we share with the front end whenever possible.
 
 Cool, back in `todos`, let's return our `savedToDo` and call our new `toJSON` method:
 
@@ -278,7 +278,7 @@ router.get('/', auth.required, async (req, res, next) => {
 });
 ```
 
-This route should look largely the same except for one huge difference. It's a `.get` instead of a `.post`. See, we are now GETting data, not POSTing, so we need to update that endpoint to reflect that. Now when we call `GET` `/todos`, we're going to hit this endpoint.
+This route should look largely the same except for one huge difference. It's a `.get` instead of a `.post`. See, we are now GETting data, not POSTing, so we need to update that endpoint to reflect that. Now when we call `GET` `todos/`, we're going to hit this endpoint.
 
 So let's start filling it in. Add a `try...catch` like before. Fill in the `catch` block in exactly the same way
 
@@ -314,16 +314,19 @@ Great! You now have the ENTIRE backend set up. Give yourself a pat on the back. 
 
 ## Create Page Structure
 
-First Sign Up. It doesn't matter what username or password you use. You'll need to be logged in.
+First Sign Up. It doesn't matter what username or password you use. Because we used `auth.required` on our endpoints, you'll need to be logged in to interact with them.
+
 Create a folder under components named “Create”
+
 Create a file inside of “Create” folder named “index.js” This file becomes the default when ‘components/Create’ is imported
-First, we import React. This pulls in the react library and is essential for creating our page:
+
+First, we'll import `React`. This pulls in the `React` library and is essential for creating our page. On the top, write:
 
 ```
 React, { Component } from 'react';
 ```
 
-Next we define a class named `CreatePage`:
+Next we'll define a class named `CreatePage`:
   
 ```
 export default class CreatePage extends Component {
@@ -331,8 +334,9 @@ export default class CreatePage extends Component {
 }
 ```
 
-`export default` says that when this page is imported, we're going to give whoever is calling it this class
-`class CreatePage extends Component` says that this page is a type of a React Component. This gives us a ton of stuff for free out of the box, and is how we get the awesomeness of React in our app.
+`export default` says that when this page is imported, we're going to give whoever is calling it this class.
+
+`class CreatePage extends Component` says that this page is a type of a React `Component`. This gives us a ton of stuff for free out of the box, and is how we get the awesomeness of React in our app.
 
 
 Next, we need to add the `render()` method. This is where we define what HTML this page will display. For now, just mark something that let's us know we're on this page. A `<div>` is a generic HTML component to display info.
@@ -375,7 +379,7 @@ Above `<Route component={Home} />` put the following:
 <Route path="/create" component={CreatePage} />
 ```
 
-This says when we go to our website, `localhost:3005/create` /create, we're going to automatically go to our Create page. You should see the create page loaded
+This says when we go to our website, `localhost:3005/create`, we're going to automatically go to our Create page. You should see the create page loaded
 ![alt text](https://s3.amazonaws.com/clc-images/CreatePage.png)
 
 ## Create a Form With A Submit
@@ -391,7 +395,7 @@ import { Formik } from 'formik';
 import { Box } from 'rebass';
 ```
 
-First, let's set up a validator. A validator is used to make sure the user doesn't submit data they shouldn't. When you've submitted forms and you've gotten a "password isn't long enough" message, a validator is what is checking the logic. We're goign to use a validation library called Yup because it's super simple to use. Paste the following code, and we'll walk through it:
+First, let's set up a validator. A validator is used to make sure the user doesn't submit data they shouldn't. When you've submitted forms and you've gotten a "password isn't long enough" message, a validator is what is checking the logic. We're going to use a validation library called Yup because it's super simple to use. Paste the following code below the imports, and we'll walk through it:
 
 ```
 const FormSchema = Yup.object().shape({
@@ -400,23 +404,23 @@ const FormSchema = Yup.object().shape({
 });
 ```
 
-`const FormSchema` defines a variable named FormSchema
-`Yup.object().shape()...` defines the validation object. This says what our form is going to be expecting. We're only going to have one field for the text of our To-Do:
+1. `const FormSchema` defines a variable named FormSchema
+2. `Yup.object().shape()...` defines the validation object. This says what our form is going to be expecting. We're only going to have one field for the text of our To-Do:
 
 ```
 text: Yup.string()
     .required('Text for your To-Do is required')
 ```
 
-Now, it's time to set up our form to put our validation in. Copy the following code for the `render()` method. I have put comments to explain what each does.
+Now, it's time to set up our form to put our validation in. Copy the following code for the `render()` method.
 
 ```
 render () {
     return (
-        <Formik // A form library that takes care of a lot of magic for us
-        initialValues={{text: ''}} // Defines what the initial text will be, a blank string ('')
-        validationSchema={FormSchema} // Uses our schema we defined above, so 'text' can't be blank
-        render={({ errors, touched, onSubmit }) => ( // Tells it what to draw
+        <Formik 
+        initialValues={{text: ''}}
+        validationSchema={FormSchema}
+        render={({ errors, touched, onSubmit }) => (
         <Form>
             <Box>
                 <Box p={10}>
@@ -431,6 +435,19 @@ render () {
     />)    
 }
 ```
+
+Let's walk through each piece:
+1. `<Formik />` is a form library that takes care of a lot of magic for us
+2. `initialValues` is a proprety on `Formik` that defines what the initial data of the form will be. We want to set our text to be blank, so we will pass in an object `{text: ''}`. We wrap it in `{ }` because we wrap passed in `props` with `{ }`
+3. `validationSchema` is a property on `Formik` that takes in any validation schema we've defined. We made our `FormSchema` to prevent blank text, and this is where we pass that in
+4. `render={({ errors, touched, onSubmit }) =>` This is automatically called and where we put our HTML. Don't worry too much about the parameters `errors, touched, onSubmit`
+5. `<Form />` is a component that I made that handles a lot of Form styling for us
+6. `<Box />` is a layout component that we put things in. the `p` stands for padding of `10` pixels to give spacing
+7. `<FormInput />` is a component that I made to handle inputs of text. It automatically takes care of errors for us
+8. `<Button />` is self explanatory. It's the button the user will click to Create his/her ToDo
+
+I know that's a ton of information. Do NOT freak out if you're confused. These things are going to come up all the time.
+
 
 Save the file and watch the page reload. You just set up your first form! Try clicking the "Create" button without putting in any text. That's the FormSchema in action :).
 
