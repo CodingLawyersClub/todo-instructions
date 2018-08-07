@@ -69,6 +69,70 @@ let ToDoSchema = new mongoose.Schema({
 mongoose.model('ToDo', ToDoSchema);
 ```
 
+OK, the only thing left to do is to let our app know about our `ToDo` model.
+
+Go to `app.js`. Search for `require('./models/User');`
+
+Below that line, let's put in our new model:
+
+```
+require('./models/User');
+require('./models/ToDo'); <-- Add this
+```
+
+Great now our app knows about our ToDo!
+
+## ToDo Routes
+
+Now we need to define an endpoint to work with our `todos`. Basically, an endpoint is a specific url we call to interact with our database, whether it be to pull or push data. Behind most websites you use there are endpoints that are fueling the data you see on your screen. As an example, you can check out the data feeding a website like CryptoKitties [here](https://api.cryptokitties.co/v2/kitties).
+
+To set up our routes, first let's create a new file named `todos.js` under `routes/api/`. Let's import what we're going to need, and walk through each one.
+
+```
+var mongoose = require('mongoose');
+var router = require('express').Router();
+var ToDo = mongoose.model('ToDo');
+var User = mongoose.model('User');
+var auth = require('../auth');
+```
+
+1. `mongoose`, you know what this is now. A wrapper for MongoDB
+2. `router` this is how we create our routes
+3. `ToDo`, the model we just created
+4. `User`, a model I created in advance
+5. `auth`, a library that deals with state of a user, logged in or logged out.
+
+At the bottom of the file, add the following:
+
+```
+module.exports = router;
+```
+
+This exports the `router` to the rest of our app. The `todos.js` should look like this:
+
+```
+var mongoose = require('mongoose');
+var router = require('express').Router();
+var ToDo = mongoose.model('ToDo');
+var User = mongoose.model('User');
+var auth = require('../auth');
+  
+module.exports = router;
+```
+
+Great! Now, let's add it to the rest of our app.
+
+Go to `routes/api/index.js`. Let's import our `/todos` route:
+
+```
+router.use('/', require('./users'));
+router.use('/todos', require('./todos')); <-- Add this!
+```
+
+Great! Our app now knows our `todos` route. There's nothing there though! Let's change that.
+
+## Build the Create ToDo Route
+
 
 # Display The Create Page
 
