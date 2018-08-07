@@ -1,3 +1,75 @@
+# Set Up Our Endpoints
+
+## Define the `ToDo` Model
+
+We're using MongoDB which is a really popular no-SQL database. To make things even simpler, we're using a library called `mongoose` that acts as a wrapper for MongoDB. One of the things we do we `mongoose` is define our models. Our models are how we want to represent the stuff we want to save to our database. Let's dive straight in.
+
+Inside of `todo-server` create a new file under `models` named `ToDo.js`. Once that's done, let's import monogoose:
+
+```
+const mongoose = require('mongoose');
+```
+
+Great, now let's define our `schema`. A `schema` is the blueprint for what properties our model will contain. Define a schema as follows
+
+```
+let ToDoSchema = new mongoose.Schema({
+
+}, {timestamps: true});
+```
+
+We're creating a new `mongoose` schema named `ToDoSchema`. The `timestamps` but just gives us a lot of stuff around when it was created / updated for free. Just copy and paste it. We're almost always going to have that piece.
+
+Cool, that was easy. So our schema right now is pretty boring as we haven't defined anything yet. What kind of things would you say should go on a ToDo? Well, you'd want text that actually says what we need to do. So let's add that property:
+
+```
+let ToDoSchema = new mongoose.Schema({
+    text: { type: String, required: true, trim: true },
+}, {timestamps: true});
+```
+
+Woah, woah, there's a lot of stuff in there. Let's go through it.
+
+1. We defined a property on our schema called `text`. 
+2. We gave it a type of `String`. A `String` is a fancy way of saying text.
+3. We want it `required`. We don't want the ability to create ToDo's without any text. This will make it impossible to do that.
+4. We want to `trim` it. This simply removes any whitespace the user may add.
+
+Cool, you've defined your first property! What else would our ToDo need? Maybe who's ToDo it is? Our app is going to have a lot of users and I don't want to be seeing your ToDos!. Let's add another property to our schema.
+
+```
+let ToDoSchema = new mongoose.Schema({
+    text: { type: String, required: true, trim: true },
+    user: { type: mongoose.Schema.Types.ObjectId, required: true } <-- Add this
+}, {timestamps: true});
+```
+
+Great, let's walk through this property now.
+1. The type is an `ObjectId`. I already have a model named `User`. This may seem a little weird – why isn't the type User? Well, you don't put full models on other models. You put a reference to them, which is it's `ObjectId`. The `ObjectId` is a unique value for every `User`.
+2. We also want to `require` the reference to the user. We don't want you to be able to create a ToDo without referencing who created it.
+
+Great, that's looking good for now! Let's do one more thing to this file.
+
+Below the schema definition, add the following:
+
+```
+mongoose.model('ToDo', ToDoSchema);
+```
+
+This is necessary to register the schema we just created with `mongoose`. When we're all said and done, `ToDo.js` should look like this:
+
+```
+const mongoose = require('mongoose');
+
+let ToDoSchema = new mongoose.Schema({
+    text: { type: String, required: true, trim: true },
+    user: { type: mongoose.Schema.Types.ObjectId, required: true }
+}, {timestamps: true});
+
+mongoose.model('ToDo', ToDoSchema);
+```
+
+
 # Display The Create Page
 
 ## Create Page Structure
