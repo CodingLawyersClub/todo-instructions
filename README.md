@@ -418,7 +418,7 @@ Now, it's time to set up our form to put our validation in. Copy the following c
 render () {
     return (
         <Formik 
-        initialValues={{text: ''}}
+        initialValues={text: ''}
         validationSchema={FormSchema}
         render={({ errors, touched, onSubmit }) => (
         <Form>
