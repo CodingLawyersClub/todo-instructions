@@ -1,4 +1,4 @@
-# What We're Building
+# Coding Lawyers Club ToDo App
 
 We're going to build a ToDo app! I know it's not the most exciting thing in the world, but it's basically a rite of passage to build at least one ToDo app. The cool thing about the app we're going to build is that even such a small app covers 90% of what all apps contain.
 
