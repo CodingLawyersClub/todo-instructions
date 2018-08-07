@@ -984,21 +984,7 @@ We need to set one Config Var
 
 Our app may not be a work of art but let's share it with our friends.
 
-First go to GitUp. You can look at all your changes here. We're going to commit them. Think of committing as saving a particular version. For now you can click "Stage All." At the bottom it will ask for a message. The message should be something that describes the current version of the code base. Write something like, "V1 complete." Then click "Commit" in the bottom right.
-
-Next, go to the terminal. First, navigate to `todo`. Once in `todo` type:
-
-```
-➜  todo git:(master) git push
-```
-
-You just pushed your code to your fork. Wonderful!
-
-Press CMD+N to open up a new terminal. Navigate to `todo-server`. Again, push:
-
-```
-➜  todo-server git:(master) ✗ git push
-```
+Go to Github Desktop. On the top left, select the current respository as `todo`. You can see all the changes we've made from when this file was last committed (or saved to a specific version). We want all these changes so you can leave everything. If you didn't want specific changes you would uncheck. We'll do this another time. For summary, put, "V1" or something else that  captures the current state of our app. Then press commit. The top right should now give you an option to "push" the branch. Pushing saves to Github and automatically deploys our app to Heroku. Push the app. Do the exact same process for the `todo-backend` by selecting it from the dropdown in the top left and following the same instructions.
 
 Great! All your code is uploaded. Because auto deploy is on, it's automatically deploying to your endpoint. After a couple of minutes you can go to the public url you noted in `agent.js`. As a reminder, mine is https://barabander-todo-frontend.herokuapp.com/ so yours should look very similar.
 
