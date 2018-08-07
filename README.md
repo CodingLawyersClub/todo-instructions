@@ -6,7 +6,7 @@ It's going to be built on something called a MERN stack. MERN stands for Mongo +
 
 The app is going to be stupid simple. It's only going to do two things:
 1. Allow a logged in user to create ToDos
-2. Allow a logged in user to fetch his/her ToDos
+2. Allow a logged in user to fetch ToDos
 
 That's it! I have already built it, so if you want to see what the final product looks like, you can check it out [here](https://barabander-todo-frontend.herokuapp.com). Feel free to create an account and create some ToDos to try it out!
 
