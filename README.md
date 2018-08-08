@@ -1301,15 +1301,15 @@ That's it. Your database is configured.
 
 ## Enter Config Vars
 
-We need to set config variables for production. These exist on the server and should never be shared.
+We need to set config variables for production. These exist on Heroku and should never be shared.
 
 1. While on your backend app, click "Settings"
 2. Under Config Vars, click "Reveal Config Vars"
 3. You should see a `MONGO_URI` that was automatically created for you. Let's add some more.
 4. Add  KEY: `SECRET` VALUE: Pick a random string here https://www.random.org/strings/?num=20&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new
 5. Add KEY: `DOMAIN` VALUE: Open a new tab. Go back to heroku.com but this time select the frontend-todo. Go to Settings and scroll down to Domain. Copy the domain of your website. Mine, for example, is https://barabander-todo-frontend.herokuapp.com
+6. Add KEY: `COOKIE_SECRET` VALUE: Pick a random string here https://www.random.org/strings/?num=20&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new
 
- 
 
 ## Set Up the Front End
 
