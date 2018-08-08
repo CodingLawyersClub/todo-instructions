@@ -1310,6 +1310,7 @@ We need to set config variables for production. These exist on Heroku and should
 5. Add KEY: `DOMAIN` VALUE: Open a new tab. Go back to heroku.com but this time select the frontend-todo. Go to Settings and scroll down to Domain. Copy the domain of your website. Mine, for example, is https://barabander-todo-frontend.herokuapp.com
 6. Add KEY: `COOKIE_SECRET` VALUE: Pick a random string here https://www.random.org/strings/?num=20&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new
 
+The rest of the config vars you need were shared in our meeting
 
 ## Set Up the Front End
 
