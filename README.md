@@ -1324,10 +1324,11 @@ First we have to set our buildpack in Heroku. It is not important what a buildpa
 6. Paste the following where it says "Enter Buildpack URL": https://github.com/mars/create-react-app-buildpack.git
 7. Click "Save Changes"
 
-We need to set one Config Var
+We need to set two Config Vars
 1. While on your frontend app, click "Settings"
 2. Under Config Vars, click "Reveal Config Vars"
 3. Add KEY: `NODE_ENV` VALUE: production
+4. ADD KEY: `REACT_APP_DECORATORS` VALUE: true
 
 ## Push to Github
 
