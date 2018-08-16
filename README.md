@@ -36,7 +36,7 @@ So our schema right now is pretty boring as we haven't defined anything yet. Wha
 
 ```
 let ToDoSchema = new mongoose.Schema({
-    text: { type: String, required: true, trim: true },
+    text: { type: String, required: true, trim: true } //<-- ADD THIS!
 }, {timestamps: true});
 ```
 
@@ -52,7 +52,7 @@ Great, you've defined your first property! What else would our ToDo need? Maybe 
 ```
 let ToDoSchema = new mongoose.Schema({
     text: { type: String, required: true, trim: true },
-    user: { type: mongoose.Schema.Types.ObjectId, required: true } <-- Add this
+    user: { type: mongoose.Schema.Types.ObjectId, required: true } //<-- ADD THIS!
 }, {timestamps: true});
 ```
 
@@ -81,6 +81,8 @@ let ToDoSchema = new mongoose.Schema({
 mongoose.model('ToDo', ToDoSchema);
 ```
 
+Save the ToDo.js file now with ⌘ + S. Do not forget this step :)
+
 OK, the only thing left to do is to let our app know about our `ToDo` model.
 
 Go to `app.js`. Search for `require('./models/User');`
@@ -89,8 +91,10 @@ Below that line, let's put in our new model:
 
 ```
 require('./models/User');
-require('./models/ToDo'); <-- Add this
+require('./models/ToDo'); // <-- Add this
 ```
+
+Save the app.js file now with ⌘ + S. Do not forget this step :)
 
 Great now our app knows about our ToDo!
 
@@ -114,7 +118,7 @@ var auth = require('../auth');
 4. `User`, a model I created in advance
 5. `auth`, a library that deals with the logged in state of the user
 
-At the bottom of the file, add the following:
+At the bottom of the file, add the following. Put some space between the defintions at top and this line:
 
 ```
 module.exports = router;
@@ -132,14 +136,18 @@ var auth = require('../auth');
 module.exports = router;
 ```
 
+Save the todos.js file now with ⌘ + S. Do not forget this step :)
+
 Great! Now we need to register this rout with our server.
 
 Go to `routes/api/index.js`. Let's import our `/todos` route:
 
 ```
 router.use('/', require('./users'));
-router.use('/todos', require('./todos')); <-- Add this!
+router.use('/todos', require('./todos')); // <-- Add this!
 ```
+
+Save the index.js file now with ⌘ + S. Do not forget this step :)
 
 Great! Our app now knows our `todos` routes file. There's no routes in this routes file though! Let's change that.
 
@@ -161,7 +169,7 @@ OK, let's walk through this.
 
 Cool! So we have the skeleton of our endpoint. Let's start filling it in :).
 
-First let's put in something called a `try...catch`. These are really useful for error handling. Add the following code inside of the method:
+First let's put in something called a `try...catch`. These are really useful for error handling. Add the following code inside of the method (so below the line that starts `router.post...` and above the `});`:
 
 ```
 try { 
@@ -181,7 +189,7 @@ First, this endpoint is creating ToDos from our app. The user is going to pass u
 { text: 'This is the text of a ToDo!' }
 ```
 
-That means we can get the text off the `req.body` like this:
+That means we can get the text off the `req.body`. Put the following inside of the `try {...}`:
 
 ```
 const todoFromRequest = req.body;  
@@ -190,19 +198,19 @@ const { text } = todoFromRequest;
 
 Now we have the `text` off the `toDoFromRequest`. The `const { text }` structure is getting a property off of `toDoFromRequest` (which looks like what we have above) and defining it as `text`.
 
-OK, now let's find our user who is making the request. We're going to need this user to save to our `ToDo`. The user's id is automatically sent up in the `payload`. We're then going to query our database by calling `findById` to find the exact user making the request. The `await` is some magic syntax that tells us to wait for that query to complete before moving on.
+OK, now let's find our user who is making the request. We're going to need this user to save to our `ToDo`. The user's id is automatically sent up in the `payload`. We're then going to query our database by calling `findById` to find the exact user making the request. The `await` is some magic syntax that tells us to wait for that query to complete before moving on. Put the following below the `const { text }...` line:
 
 ```
 const user = await User.findById(req.payload.id);
 ```
 
-Great! Because we now have the `text` and the `user` we have everything we need to create our ToDo!. Let's make a new `ToDo` and pass in the `user` and `text`:
+Great! Because we now have the `text` and the `user` we have everything we need to create our ToDo!. Let's make a new `ToDo` and pass in the `user` and `text`. Put this directly below the `const user...` line:
 
 ```
 const toDo = new ToDo({user, text});
 ```
 
-Let's then save it to our database by calling `save()`:
+Let's then save it to our database by calling `save()`. Put this directly below the `const toDo` line:
 
 ```
 const savedToDo = await toDo.save();
@@ -210,7 +218,7 @@ const savedToDo = await toDo.save();
 
 Wow, you're now saving ToDo's to our database! Now, I don't want to return all of the data of our `ToDo`, just what the frontend actually needs. Lets go back to our model at `ToDo.js` and define a method to structure our `ToDo` to return.
 
-In `ToDo.js` write the following method:
+In `ToDo.js` write the following method, below the `let ToDoSchema...` and above the `mongoose.model...`:
 
 ```
 ToDoSchema.methods.toJSON = function(){
@@ -227,9 +235,11 @@ This looks scary but it's actually really simple. Let's walk through it.
 2. The `function()` is just saying this is a method
 3. We are returning the `id` of the todo with `this.id` and the text with `this.text`
 
+Save the ToDo.js file now with ⌘ + S. Do not forget this step :)
+
 Now, if we call this method, we're only going to return the `id` and the `text` of the `ToDo`. We try and minimize what we share with the front end whenever possible.
 
-Cool, back in `todos`, let's return our `savedToDo` and call our new `toJSON` method:
+Cool, back in `todos`, let's return our `savedToDo` and call our new `toJSON` method. Add the following as the last line in the `try...` (directly below `const savedToDo...`):
 
 ```
 return res.json({toDo: savedToDo.toJSON()})
@@ -246,6 +256,8 @@ next(e);
 
 `console.error(e)` is going to log errors for us that occur so we can see what went wrong
 Do not worry about what `next(e)` is. Just include it.
+
+Save the todos.js file now with ⌘ + S. Do not forget this step :)
 
 Fantastic! We are completely done with this create endpoint! It should look like this:
 
@@ -304,6 +316,8 @@ Let's walk through it.
 2. We make a new query with `ToDo.find`. The first thing we do is pass in parameters. The `find({user})` says, listen, I don't want all ToDos, I just want the ToDos where the `user` property is the exact `user` that is making this request.
 3. We sort them by when they were created with `.sort`. It `descending` so the newest will be first in the list, oldest will be last
 4. We return our ToDos with `return res.json`. You can see we `map` over them first. This basically says, take the list of `toDos` you found, go over every single one, and call our `toJSON` method. This makes it so we're only returning what we want to return.
+
+Save the todos.js file now with ⌘ + S. Do not forget this step :)
 
 Great! You now have the ENTIRE backend set up. Give yourself a pat on the back. Let's go and call these endpoints from the front end!
 
